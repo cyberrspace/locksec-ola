@@ -9,7 +9,7 @@ export default function LoginUser() {
     <div className="flex items-center ">
       {/* Login Text acting as a clickable link */}
       <p
-        onClick={() => router.push("/")}
+        onClick={() => router.push("user")}
         className="text-blue-600 text-xl font-semibold cursor-pointer hover:underline"
       >
         Login

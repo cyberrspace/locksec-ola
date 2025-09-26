@@ -6,18 +6,21 @@ interface SubmitButtonProps {
   label: string;
   onClick?: () => void;
   className?: string;
+  disabled?: boolean;
 }
 
 export default function SubmitButton({
   label,
   onClick,
   className,
+  disabled,
 }: SubmitButtonProps) {
   return (
     <button
       type="submit"
       onClick={onClick}
-      className={`w-[327px] h-[46px] bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-semibold  ${className}`}
+      disabled={disabled}
+      className={`w-[327px] h-[46px] bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
     >
       {label}
     </button>

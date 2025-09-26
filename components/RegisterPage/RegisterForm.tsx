@@ -22,6 +22,8 @@ export default function RegisterForm() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -29,15 +31,34 @@ export default function RegisterForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem("userData", JSON.stringify(formData));
-    alert("Registration successful!");
-    router.push("/user");
+    setLoading(true);
+    setSuccessMsg("");
+
+    try {
+      // ✅ Save to localStorage
+      localStorage.setItem("userData", JSON.stringify(formData));
+
+      // ✅ Simulate API/database call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // ✅ Show success message
+      setSuccessMsg("Registration successful!");
+
+      // ✅ Redirect to /user after 2 seconds
+      setTimeout(() => {
+        router.push("/user");
+      }, 2000);
+    } catch (err) {
+      console.error("Error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="flex items-center  min-h-screen justify-center px-4 py-6">
+    <div className="flex items-center min-h-screen justify-center px-4 py-6">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-[327px]">
         {/* First & Last Name */}
         <div className="flex gap-4 w-full">
@@ -45,7 +66,6 @@ export default function RegisterForm() {
             <span className="block mb-1">
               First Name <span className="text-red-500">*</span>
             </span>
-          
             <input
               type="text"
               name="firstName"
@@ -90,7 +110,7 @@ export default function RegisterForm() {
 
         <label className="block text-[12px]">
           <span className="block mb-1">
-            Phone Number: <span className="text-red-500">*</span>
+            Phone Number <span className="text-red-500">*</span>
           </span>
           <input
             type="tel"
@@ -107,7 +127,7 @@ export default function RegisterForm() {
         <div className="relative w-full">
           <label className="block text-[12px]">
             <span className="block mb-1">
-            Move-in-date: <span className="text-red-500">*</span>
+              Move-in-date <span className="text-red-500">*</span>
             </span>
             <input
               type="date"
@@ -123,7 +143,7 @@ export default function RegisterForm() {
 
         <label className="block text-[12px]">
           <span className="block mb-1">
-           Address: <span className="text-red-500">*</span>
+            Address <span className="text-red-500">*</span>
           </span>
           <input
             type="text"
@@ -142,12 +162,12 @@ export default function RegisterForm() {
           onChange={(value) => setFormData((p) => ({ ...p, userType: value }))}
         />
 
-        {/* Conditional Business Inputs */}
+        {/* Business Inputs if userType is Business Owner */}
         {formData.userType === "Business Owner" && (
           <>
             <label className="block text-[12px]">
               <span className="block mb-1">
-                Bussiness Name: <span className="text-red-500">*</span>
+                Business Name <span className="text-red-500">*</span>
               </span>
               <input
                 type="text"
@@ -162,7 +182,7 @@ export default function RegisterForm() {
 
             <label className="block text-[12px]">
               <span className="block mb-1">
-                Industry: <span className="text-red-500">*</span>
+                Industry <span className="text-red-500">*</span>
               </span>
               <select
                 name="industry"
@@ -172,9 +192,7 @@ export default function RegisterForm() {
                 className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="">Select Industry</option>
-                <option value="Information Technology">
-                  Information Technology
-                </option>
+                <option value="Information Technology">Information Technology</option>
                 <option value="Plumber">Plumber</option>
                 <option value="Electrician">Electrician</option>
                 <option value="Food">Food</option>
@@ -186,7 +204,7 @@ export default function RegisterForm() {
         {/* Password with Eye Icon */}
         <label className="block text-[12px] relative">
           <span className="block mb-1">
-           Set password: <span className="text-red-500">*</span>
+            Set password <span className="text-red-500">*</span>
           </span>
           <input
             type={showPassword ? "text" : "password"}
@@ -206,7 +224,15 @@ export default function RegisterForm() {
           </button>
         </label>
 
-        <RegisterButton label="Register" />
+        {/* Submit Button */}
+        <RegisterButton label={loading ? "Registering..." : "Register"} disabled={loading} />
+
+        {/* ✅ Success Message */}
+        {successMsg && (
+          <p className="text-green-600 text-center mt-2 w-[327px] font-medium">
+            {successMsg}
+          </p>
+        )}
       </form>
     </div>
   );
