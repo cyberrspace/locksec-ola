@@ -37,19 +37,33 @@ export default function RegisterForm() {
     setSuccessMsg("");
 
     try {
-      // ✅ Save to localStorage
-      localStorage.setItem("userData", JSON.stringify(formData));
+      // ✅ Prepare user data
+      let savedLastName = formData.lastName.trim();
+      let code = "";
 
-      // ✅ Simulate API/database call
+      if (formData.userType === "Business Owner") {
+        // generate random 6 digit code
+        code = Math.floor(100000 + Math.random() * 900000).toString();
+        savedLastName = `${savedLastName}-${code}`;
+      }
+
+      const userPayload = {
+        lastName: savedLastName,
+        address: formData.address.trim(),
+      };
+
+      // ✅ Save ONLY lastName & address (+code if business) to localStorage
+      localStorage.setItem("userData", JSON.stringify(userPayload));
+
+      // Simulate API/database call
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // ✅ Show success message
       setSuccessMsg("Registration successful!");
 
-      // ✅ Redirect to /user after 2 seconds
+      // Redirect after short delay
       setTimeout(() => {
         router.push("/user");
-      }, 2000);
+      }, 1500);
     } catch (err) {
       console.error("Error:", err);
     } finally {
@@ -71,8 +85,8 @@ export default function RegisterForm() {
               name="firstName"
               value={formData.firstName}
               onChange={handleChange}
-              placeholder="First Name"
               required
+              placeholder="First Name"
               className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
             />
           </label>
@@ -86,8 +100,8 @@ export default function RegisterForm() {
               name="lastName"
               value={formData.lastName}
               onChange={handleChange}
-              placeholder="Last Name"
               required
+              placeholder="Last Name"
               className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
             />
           </label>
@@ -102,8 +116,8 @@ export default function RegisterForm() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            placeholder="Email"
             required
+            placeholder="Email"
             className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
           />
         </label>
@@ -117,17 +131,16 @@ export default function RegisterForm() {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            placeholder="Phone Number"
             required
+            placeholder="Phone Number"
             className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
           />
         </label>
 
-        {/* Move-in Date */}
         <div className="relative w-full">
           <label className="block text-[12px]">
             <span className="block mb-1">
-              Move-in-date <span className="text-red-500">*</span>
+              Move-in Date <span className="text-red-500">*</span>
             </span>
             <input
               type="date"
@@ -138,7 +151,7 @@ export default function RegisterForm() {
               className="w-full h-[47px] border rounded-md focus:ring-2 focus:ring-blue-500"
             />
           </label>
-          <Calendar className="absolute right-3 top-10 w-5 h-5 text-gray-500 pointer-events-none" />
+          <Calendar className="absolute right-3 top-10 w-5 h-5 text-gray-500" />
         </div>
 
         <label className="block text-[12px]">
@@ -150,8 +163,8 @@ export default function RegisterForm() {
             name="address"
             value={formData.address}
             onChange={handleChange}
-            placeholder="Address"
             required
+            placeholder="Address"
             className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
           />
         </label>
@@ -162,7 +175,6 @@ export default function RegisterForm() {
           onChange={(value) => setFormData((p) => ({ ...p, userType: value }))}
         />
 
-        {/* Business Inputs if userType is Business Owner */}
         {formData.userType === "Business Owner" && (
           <>
             <label className="block text-[12px]">
@@ -174,8 +186,8 @@ export default function RegisterForm() {
                 name="businessName"
                 value={formData.businessName}
                 onChange={handleChange}
-                placeholder="Business Name"
                 required
+                placeholder="Business Name"
                 className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
               />
             </label>
@@ -192,7 +204,7 @@ export default function RegisterForm() {
                 className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="">Select Industry</option>
-                <option value="Information Technology">Information Technology</option>
+                <option value="IT">Information Technology</option>
                 <option value="Plumber">Plumber</option>
                 <option value="Electrician">Electrician</option>
                 <option value="Food">Food</option>
@@ -201,7 +213,6 @@ export default function RegisterForm() {
           </>
         )}
 
-        {/* Password with Eye Icon */}
         <label className="block text-[12px] relative">
           <span className="block mb-1">
             Set password <span className="text-red-500">*</span>
@@ -211,8 +222,8 @@ export default function RegisterForm() {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            placeholder="Set Password"
             required
+            placeholder="Set Password"
             className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
           />
           <button
@@ -224,10 +235,11 @@ export default function RegisterForm() {
           </button>
         </label>
 
-        {/* Submit Button */}
-        <RegisterButton label={loading ? "Registering..." : "Register"} disabled={loading} />
+        <RegisterButton
+          label={loading ? "Registering..." : "Register"}
+          disabled={loading}
+        />
 
-        {/* ✅ Success Message */}
         {successMsg && (
           <p className="text-green-600 text-center mt-2 w-[327px] font-medium">
             {successMsg}
