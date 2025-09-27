@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import RadioButton from "./RadioButton";
 import RegisterButton from "./RegisterButton";
 
 export default function RegisterForm() {
   const router = useRouter();
+
+  // ✅ Set userType default to "Resident"
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -16,7 +18,7 @@ export default function RegisterForm() {
     moveInDate: "",
     address: "",
     password: "",
-    userType: "",
+    userType: "Resident", // ✅ default value fixes the value error
     businessName: "",
     industry: "",
   });
@@ -42,7 +44,6 @@ export default function RegisterForm() {
       let code = "";
 
       if (formData.userType === "Business Owner") {
-        // generate random 6 digit code
         code = Math.floor(100000 + Math.random() * 900000).toString();
         savedLastName = `${savedLastName}-${code}`;
       }
@@ -52,7 +53,6 @@ export default function RegisterForm() {
         address: formData.address.trim(),
       };
 
-      // ✅ Save ONLY lastName & address (+code if business) to localStorage
       localStorage.setItem("userData", JSON.stringify(userPayload));
 
       // Simulate API/database call
@@ -60,7 +60,6 @@ export default function RegisterForm() {
 
       setSuccessMsg("Registration successful!");
 
-      // Redirect after short delay
       setTimeout(() => {
         router.push("/user");
       }, 1500);
@@ -138,20 +137,20 @@ export default function RegisterForm() {
         </label>
 
         <div className="relative w-full">
-          <label className="block text-[12px]">
+          <label htmlFor="moveInDate" className="block text-[12px]">
             <span className="block mb-1">
               Move-in Date <span className="text-red-500">*</span>
             </span>
             <input
+              id="moveInDate"
               type="date"
               name="moveInDate"
               value={formData.moveInDate}
               onChange={handleChange}
               required
-              className="w-full h-[47px] border rounded-md focus:ring-2 focus:ring-blue-500"
+              className="w-full h-[47px] px-3 pr-10 border rounded-md focus:ring-2 focus:ring-blue-500"
             />
           </label>
-          <Calendar className="absolute right-3 top-10 w-5 h-5 text-gray-500" />
         </div>
 
         <label className="block text-[12px]">
@@ -169,7 +168,7 @@ export default function RegisterForm() {
           />
         </label>
 
-        {/* Radio Buttons */}
+        {/* ✅ Radio Buttons */}
         <RadioButton
           value={formData.userType}
           onChange={(value) => setFormData((p) => ({ ...p, userType: value }))}

@@ -4,8 +4,8 @@ import SignUpLink from "./SignUp";
 
 export default function LoginHero(){
  return(
- <section className="mt-12 px-4 space-y-10">
-    <div className="flex flex-row flex-1 gap-2 ">
+ <section className=" px-4 space-y-10">
+    <div className="flex flex-row flex-1 gap-2 pt-16">
              <Image
                src="/icons/lock-logo.png"
                alt="Locksec"

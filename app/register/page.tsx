@@ -16,7 +16,13 @@ export default function RegisterPage(){
          
          <RegisterHero/>
         </section>
-        <RegisterForm/>
+        <section> 
+          <RegisterForm />
+          
+        </section>
+        <div className="p-8 flex justify-center ">
+          <div className="w-[148px] h-[5px] bg-[#000000]" />
+        </div>
       </main>
     </ContentWrapper>
   

@@ -19,6 +19,10 @@ export default function UserPage() {
           <UserHero/>
         </section>
          <UserBody/>
+         <div className="pb-10 flex justify-center ">
+          <div className="w-[148px] h-[5px] bg-[#000000]" />
+         </div>
+        
       </main>
       </ContentWrapper>
           

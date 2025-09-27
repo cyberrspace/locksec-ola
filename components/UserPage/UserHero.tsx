@@ -20,8 +20,8 @@ export default function UserHero() {
 
   return (
     <main >
-      <section className="px-2 sm:px-4 mt-6">
-        <div className="flex justify-between items-center">
+      <section className="px-2 sm:px-4 ">
+        <div className="flex justify-between items-center pt-14">
           <div className="flex items-center gap-2">
             <div
               className="flex items-center justify-center
