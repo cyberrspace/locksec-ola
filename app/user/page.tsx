@@ -1,7 +1,7 @@
 "use client";
 
 import ContentWrapper from "@/components/common/ContentWrapper";
-import NavBar from "@/components/LoginPage/NavBar";
+
 import UserBody from "@/components/UserPage/UserBody";
 import UserHero from "@/components/UserPage/UserHero";
 
@@ -15,7 +15,7 @@ export default function UserPage() {
       <main className=" min-h-screen bg-[#363636]" >
 
         <section className="bg-[#0D0D1B] h-[182px]">
-          <NavBar />
+       
           <UserHero/>
         </section>
          <UserBody/>
