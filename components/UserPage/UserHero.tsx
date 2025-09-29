@@ -19,9 +19,9 @@ export default function UserHero() {
   }, []);
 
   return (
-    <main >
-      <section className="px-2 sm:px-4 ">
-        <div className="flex justify-between items-center pt-14">
+    <main className="h-[219px] w-full flex items-center"> {/* 👈 fill height & push down */}
+      <section className="w-full px-2 sm:px-4 pb-4"> {/* 👈 add bottom padding for breathing room */}
+        <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div
               className="flex items-center justify-center
@@ -49,7 +49,7 @@ export default function UserHero() {
           </div>
         </div>
 
-        <div className="mt-4">
+        <div className="pt-4">
           <p className="text-[#FFFFFF] font-bold text-[20.51px]">
             Hello, {userData?.lastName || "User"}.
           </p>

@@ -6,27 +6,22 @@ import LoginTwo from "@/components/LoginPage/LoginTwo";
 import LoginButton from "@/components/LoginPage/LoginButton";
 import LoginTerms from "@/components/LoginPage/LoginTerms";
 
+export default function LoginPage() {
+  return (
+    <ContentWrapper>
+      <main className="flex flex-col min-h-screen w-full space-y-6">
+        {/* HERO SECTION */}
+        <section className="w-full bg-[#0D0D1B] py-10 sm:py-12 md:py-16">
+          <LoginHero />
+        </section>
 
-export default function LoginPage(){
-  return(
-   <ContentWrapper>
-   
-    <main>
-        <section className="bg-[#0D0D1B] h-[342px]">
-        
-    <LoginHero/>
-   </section>
-   <section className="flex flex-col items-center justify-center gap-10 mt-10">
-     <LoginTwo />
-     <LoginButton/>
+        {/* FORM SECTION */}
+        <section className="flex flex-col items-center justify-center w-full flex-1 gap-8 px-4 sm:px-6 md:px-8 bg-transparent">
+          <LoginTwo />
+          <LoginButton />
           <LoginTerms />
-   </section>
-        <div className="p-8 flex justify-center ">
-          <div className="w-[148px] h-[5px] bg-[#000000]"/>
-        </div>
+        </section>
       </main>
-   </ContentWrapper>
-
-
-  )
+    </ContentWrapper>
+  );
 }

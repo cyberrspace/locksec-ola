@@ -9,7 +9,7 @@ export default function BackArrow() {
   return (
     <button
       onClick={() => router.push("/login")}
-      className="flex items-center gap-2 text-[#FFFFFF] hover:text-[#FFFFFF] transition"
+      className="flex items-center  text-[#FFFFFF] hover:text-[#FFFFFF] transition"
     >
       <ArrowLeft className="w-5 h-5" />
       

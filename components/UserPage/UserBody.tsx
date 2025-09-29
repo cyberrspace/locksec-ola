@@ -5,6 +5,7 @@ import GenerateCode from "./GenerateCode";
 import EstateBills from "./EstateBills";
 import HistoryCard from "./HistoryCard";
 import ProfileCard from "./ProfileCard";
+import HorizontalLine from "./horizontalLine";
 
 export default function UserBody(){
   return(
@@ -34,6 +35,7 @@ export default function UserBody(){
       <HistoryCard/>
       <ProfileCard/>
       </section>
+      <HorizontalLine/>
     </main>
   )
 }
