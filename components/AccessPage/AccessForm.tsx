@@ -3,14 +3,17 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
-import RadioButton from "./RadioButton";
-import RegisterButton from "./RegisterButton";
+import AccessButton from "./AccessButton";
+import AccessCard from "./AccessCard"
 
-export default function RegisterForm() {
+
+
+export default function AccessForm() {
   const router = useRouter();
 
  
   const [formData, setFormData] = useState({
+    visitorType:"",
     firstName: "",
     lastName: "",
     email: "",
@@ -39,7 +42,7 @@ export default function RegisterForm() {
     setSuccessMsg("");
 
     try {
-      // ✅ Prepare user data
+      //  Prepare user data
       let savedLastName = formData.lastName.trim();
       let code = "";
 
@@ -73,6 +76,9 @@ export default function RegisterForm() {
   return (
     <div className="flex items-center min-h-screen justify-center px-4 py-6">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-[327px]">
+
+       <AccessCard/>
+
         {/* First & Last Name */}
         <div className="flex gap-4 w-full">
           <label className="block text-[12px] w-[155px]">
@@ -168,12 +174,8 @@ export default function RegisterForm() {
           />
         </label>
 
-        {/*  Radio Buttons */}
-        <RadioButton
-          value={formData.userType}
-          onChange={(value) => setFormData((p) => ({ ...p, userType: value }))}
-        />
-
+      
+       
         {formData.userType === "Business Owner" && (
           <>
             <label className="block text-[12px]">
@@ -234,7 +236,7 @@ export default function RegisterForm() {
           </button>
         </label>
 
-        <RegisterButton
+        <AccessButton
           label={loading ? "Registering..." : "Register"}
           disabled={loading}
         />
