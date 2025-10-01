@@ -1,32 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import AccessButton from "./AccessButton";
-import AccessCard from "./AccessCard"
-
-
+import AccessCard from "./AccessCard";
 
 export default function AccessForm() {
   const router = useRouter();
 
- 
   const [formData, setFormData] = useState({
-    visitorType:"",
+    visitorType: "",
     firstName: "",
     lastName: "",
-    email: "",
     phone: "",
-    moveInDate: "",
-    address: "",
-    password: "",
-    userType: "Resident", 
-    businessName: "",
-    industry: "",
+    vehicles: "",
+    plate: "",
+    noOfPersons: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
@@ -42,29 +33,21 @@ export default function AccessForm() {
     setSuccessMsg("");
 
     try {
-      //  Prepare user data
-      let savedLastName = formData.lastName.trim();
-      let code = "";
-
-      if (formData.userType === "Business Owner") {
-        code = Math.floor(100000 + Math.random() * 900000).toString();
-        savedLastName = `${savedLastName}-${code}`;
-      }
-
-      const userPayload = {
-        lastName: savedLastName,
-        address: formData.address.trim(),
-      };
-
-      localStorage.setItem("userData", JSON.stringify(userPayload));
-
-      // Simulate API/database call
+      // simulate API/database call
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      setSuccessMsg("Registration successful!");
+      setSuccessMsg("Access code generated successfully!");
+
+      // build query params
+      const queryParams = new URLSearchParams({
+        visitorType: formData.visitorType || "Guest",
+        visitorsCount: formData.noOfPersons || "1",
+        plateNumber: formData.plate,
+        name: `${formData.firstName} ${formData.lastName}`,
+      });
 
       setTimeout(() => {
-        router.push("/user");
+        router.push(`/code?${queryParams.toString()}`);
       }, 1500);
     } catch (err) {
       console.error("Error:", err);
@@ -76,8 +59,7 @@ export default function AccessForm() {
   return (
     <div className="flex items-center min-h-screen justify-center px-4 py-6">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-[327px]">
-
-       <AccessCard/>
+        <AccessCard />
 
         {/* First & Last Name */}
         <div className="flex gap-4 w-full">
@@ -92,7 +74,7 @@ export default function AccessForm() {
               onChange={handleChange}
               required
               placeholder="First Name"
-              className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+              className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 font-bold"
             />
           </label>
 
@@ -107,26 +89,12 @@ export default function AccessForm() {
               onChange={handleChange}
               required
               placeholder="Last Name"
-              className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+              className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 font-bold"
             />
           </label>
         </div>
 
-        <label className="block text-[12px]">
-          <span className="block mb-1">
-            Email Address <span className="text-red-500">*</span>
-          </span>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            placeholder="Email"
-            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
-          />
-        </label>
-
+        {/* Phone */}
         <label className="block text-[12px]">
           <span className="block mb-1">
             Phone Number <span className="text-red-500">*</span>
@@ -138,109 +106,88 @@ export default function AccessForm() {
             onChange={handleChange}
             required
             placeholder="Phone Number"
-            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 font-bold"
           />
         </label>
 
-        <div className="relative w-full">
-          <label htmlFor="moveInDate" className="block text-[12px]">
-            <span className="block mb-1">
-              Move-in Date <span className="text-red-500">*</span>
-            </span>
-            <input
-              id="moveInDate"
-              type="date"
-              name="moveInDate"
-              value={formData.moveInDate}
-              onChange={handleChange}
-              required
-              className="w-full h-[47px] px-3 pr-10 border rounded-md focus:ring-2 focus:ring-blue-500"
-            />
-          </label>
-        </div>
-
+        {/* Number of persons */}
         <label className="block text-[12px]">
           <span className="block mb-1">
-            Address <span className="text-red-500">*</span>
+            No. of persons <span className="text-red-500">*</span>
+          </span>
+          <input
+            type="number"
+            name="noOfPersons"
+            value={formData.noOfPersons}
+            onChange={handleChange}
+            required
+            placeholder="0"
+            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 font-bold"
+          />
+        </label>
+
+        {/* Visitor Type */}
+        <label className="block text-[12px]">
+          <span className="block mb-1">
+            Visitor Type <span className="text-red-500">*</span>
+          </span>
+          <select
+            name="visitorType"
+            value={formData.visitorType}
+            onChange={handleChange}
+            required
+            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
+          >
+            <option value="">Select</option>
+            <option value="Guest">Guest</option>
+            <option value="Dispatch">Dispatch</option>
+            <option value="Cab">Cab</option>
+            <option value="Artisan">Artisan</option>
+          </select>
+        </label>
+
+        {/* Vehicles */}
+        <label className="block text-[12px]">
+          <span className="block mb-1">
+            Coming Vehicles <span className="text-red-500">*</span>
+          </span>
+          <select
+            name="vehicles"
+            value={formData.vehicles}
+            onChange={handleChange}
+            required
+            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
+          >
+            <option value="">Select</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </label>
+
+        {/* Plate Number */}
+        <label className="block text-[12px]">
+          <span className="block mb-1">
+            Plate number <span className="text-red-500">*</span>
           </span>
           <input
             type="text"
-            name="address"
-            value={formData.address}
+            pattern="[A-Za-z0-9]+"
+            name="plate"
+            value={formData.plate}
             onChange={handleChange}
             required
-            placeholder="Address"
-            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+            placeholder="Plate Number"
+            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 font-bold"
           />
         </label>
 
-      
-       
-        {formData.userType === "Business Owner" && (
-          <>
-            <label className="block text-[12px]">
-              <span className="block mb-1">
-                Business Name <span className="text-red-500">*</span>
-              </span>
-              <input
-                type="text"
-                name="businessName"
-                value={formData.businessName}
-                onChange={handleChange}
-                required
-                placeholder="Business Name"
-                className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
-              />
-            </label>
-
-            <label className="block text-[12px]">
-              <span className="block mb-1">
-                Industry <span className="text-red-500">*</span>
-              </span>
-              <select
-                name="industry"
-                value={formData.industry}
-                onChange={handleChange}
-                required
-                className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
-              >
-                <option value="">Select Industry</option>
-                <option value="IT">Information Technology</option>
-                <option value="Plumber">Plumber</option>
-                <option value="Electrician">Electrician</option>
-                <option value="Food">Food</option>
-              </select>
-            </label>
-          </>
-        )}
-
-        <label className="block text-[12px] relative">
-          <span className="block mb-1">
-            Set password <span className="text-red-500">*</span>
-          </span>
-          <input
-            type={showPassword ? "text" : "password"}
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            placeholder="Set Password"
-            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute right-3 top-9 text-gray-500"
-          >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-        </label>
-
+        {/* Submit button */}
         <AccessButton
-          label={loading ? "Registering..." : "Register"}
+          label={loading ? "Generating..." : "Generate access code"}
           disabled={loading}
         />
 
+        {/* Success message */}
         {successMsg && (
           <p className="text-green-600 text-center mt-2 w-[327px] font-medium">
             {successMsg}
