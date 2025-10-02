@@ -7,7 +7,7 @@ export default function EstateBills(){
   return(
     <button
       type="button"
-      onClick={() => router.push("/access-code")} 
+      onClick={() => router.push("/estate")} 
       className="bg-[#334B52] h-[163px] w-[163px] rounded-[15.38px] p-4 space-y-12
                  flex flex-col justify-between
                  cursor-pointer transition-transform duration-200

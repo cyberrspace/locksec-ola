@@ -9,12 +9,15 @@ import CodeHero from "@/components/GeneratedPage/CodeHero";
 export default function CodePage(){
   return(
     <ContentWrapper>
-     <section>
-      <CodeHero/>
-     </section>
-     <section>
-      <CodeDetails/>
-     </section>
+      <main className="h-[863px]">
+        <section>
+          <CodeHero />
+        </section>
+        <section>
+          <CodeDetails />
+        </section>
+ 
+      </main>
      
     
     </ContentWrapper>
