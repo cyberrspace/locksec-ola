@@ -5,6 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import RadioButton from "./RadioButton";
 import RegisterButton from "./RegisterButton";
+import IndustrySelect from "./IndusrtrySelect";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -191,24 +192,10 @@ export default function RegisterForm() {
               />
             </label>
 
-            <label className="block text-[12px]">
-              <span className="block mb-1">
-                Industry <span className="text-red-500">*</span>
-              </span>
-              <select
-                name="industry"
-                value={formData.industry}
-                onChange={handleChange}
-                required
-                className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
-              >
-                <option value="">Select Industry</option>
-                <option value="IT">Information Technology</option>
-                <option value="Plumber">Plumber</option>
-                <option value="Electrician">Electrician</option>
-                <option value="Food">Food</option>
-              </select>
-            </label>
+           <IndustrySelect
+             value={formData.industry}
+             onChange={(val: string) => setFormData((p) => ({ ...p, industry: val }))}
+           />
           </>
         )}
 
