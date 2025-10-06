@@ -10,6 +10,7 @@ export default function EstatePaymentForm() {
   const [months, setMonths] = useState("1");
   const [amount, setAmount] = useState(28000); // default for 1 month
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [apartment, setApartment] = useState("Apt 12B Road M"); // <-- added apartment input
 
   const monthlyRate = 28000; // fixed monthly subscription
 
@@ -24,7 +25,6 @@ export default function EstatePaymentForm() {
   };
 
   useEffect(() => {
-    // Only depend on months now
     setAmount(Number(months) * monthlyRate);
   }, [months]);
 
@@ -33,15 +33,15 @@ export default function EstatePaymentForm() {
     router.push(
       `/summary?bills=${encodeURIComponent(
         selectedBills.join(", ")
-      )}&months=${months}&amount=${amount}`
+      )}&months=${months}&amount=${amount}&apartment=${encodeURIComponent(apartment)}`
     );
   };
 
   return (
-    <div className="flex justify-center items-center  ">
+    <div className="flex justify-center items-center">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-4  flex flex-col gap-4 w-[350px]"
+        className="bg-white p-4 flex flex-col gap-4 w-[350px]"
       >
         {/* Estate Bill Selection */}
         <div className="relative">
@@ -75,9 +75,20 @@ export default function EstatePaymentForm() {
           )}
         </div>
 
+        {/* Apartment Selection */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Apartment</label>
+          <input
+            type="text"
+            value={apartment}
+            onChange={(e) => setApartment(e.target.value)}
+            className="border rounded-md px-3 w-[327px] h-[46px]"
+          />
+        </div>
+
         {/* Months Selection */}
         <div>
-          <label className="block text-sm font-medium mb-1 ">Month(s)</label>
+          <label className="block text-sm font-medium mb-1">Month(s)</label>
           <select
             value={months}
             onChange={(e) => handleMonthsChange(e.target.value)}
@@ -105,7 +116,6 @@ export default function EstatePaymentForm() {
         </div>
 
         {/* Submit */}
-
         <div className="mt-[8rem]">
           <button
             type="submit"
@@ -114,11 +124,10 @@ export default function EstatePaymentForm() {
             Make Payment
           </button>
 
-          <div className=" flex justify-center mt-4">
+          <div className="flex justify-center mt-4">
             <div className="w-[148px] h-[5px] bg-[#000000]" />
           </div>
         </div>
-        
       </form>
     </div>
   );
