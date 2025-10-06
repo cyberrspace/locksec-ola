@@ -40,7 +40,6 @@ export default function RegisterForm() {
     setSuccessMsg("");
 
     try {
-      // ✅ Prepare user data
       let savedLastName = formData.lastName.trim();
       let code = "";
 
@@ -50,13 +49,13 @@ export default function RegisterForm() {
       }
 
       const userPayload = {
+        firstName: formData.firstName.trim(), // ✅ save firstName
         lastName: savedLastName,
-        address: formData.address.trim(),
+        address: formData.address.trim(),     // ✅ save address
       };
 
       localStorage.setItem("userData", JSON.stringify(userPayload));
 
-      // Simulate API/database call
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       setSuccessMsg("Registration successful!");
@@ -70,6 +69,7 @@ export default function RegisterForm() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="flex items-center min-h-screen justify-center px-4 py-6">

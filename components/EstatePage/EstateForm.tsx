@@ -31,7 +31,7 @@ export default function EstatePaymentForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     router.push(
-      `/payment-summary?bills=${encodeURIComponent(
+      `/summary?bills=${encodeURIComponent(
         selectedBills.join(", ")
       )}&months=${months}&amount=${amount}`
     );

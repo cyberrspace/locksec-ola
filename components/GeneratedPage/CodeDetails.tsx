@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Copy, } from "lucide-react";
+import { Copy } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
-
 import { useRouter, useSearchParams } from "next/navigation";
 import HorizontalLine from "../UserPage/horizontalLine";
 
@@ -11,7 +10,6 @@ export default function CodeDetails() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // read from query params
   const visitorType = searchParams.get("visitorType") || "Visitor";
   const visitorsCount = searchParams.get("visitorsCount") || "1";
   const plateNumber = searchParams.get("plateNumber") || "N/A";
@@ -21,10 +19,19 @@ export default function CodeDetails() {
   const [status, setStatus] = useState("Inactive");
   const [copied, setCopied] = useState(false);
 
+  // ✅ State for userData
+  const [userData, setUserData] = useState<{ firstName: string; address: string } | null>(null);
+
   useEffect(() => {
     const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
     setCode(generatedCode);
     setStatus("Active");
+
+    // ✅ Fetch user data from localStorage
+    const stored = localStorage.getItem("userData");
+    if (stored) {
+      setUserData(JSON.parse(stored));
+    }
   }, []);
 
   const handleCopy = () => {
@@ -44,6 +51,7 @@ Plate Number: ${plateNumber}`;
   return (
     <section className="min-h-screen bg-[#FFFFFF] text-white flex flex-col items-center px-4 py-10">
       <div className="bg-[#FFFFFF] w-full max-w-md rounded-xl p-4  space-y-6">
+
         {/* Code + Copy */}
         <div className="flex justify-between items-center">
           <h2 className="text-3xl font-extrabold text-[#1A1C1E] ">{code}</h2>
@@ -81,12 +89,16 @@ Plate Number: ${plateNumber}`;
           </div>
         </div>
 
-
+        {/* ✅ For Section - now dynamic */}
         <div className="space-y-4">
           <p className="font-normal text-[16px] text-[#6C7278]">For:</p>
           <div className="flex justify-between">
-            <p className="font-normal text-[16px] text-[#6C7278]">Mr Adebayo</p>
-            <p className="font-normal text-[16px] text-[#1A1C1E]">Apt 12B Road M</p>
+            <p className="font-normal text-[16px] text-[#6C7278]">
+              {userData?.firstName || "User"}
+            </p>
+            <p className="font-normal text-[16px] text-[#1A1C1E]">
+              {userData?.address || "No Address"}
+            </p>
           </div>
         </div>
 
@@ -104,8 +116,6 @@ Plate Number: ${plateNumber}`;
           >
             Go to User Page
           </button>
-
-          
         </div>
 
         <a
@@ -114,12 +124,12 @@ Plate Number: ${plateNumber}`;
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2  hover:bg-green-500 px-4 py-2 mt-8 font-normal text-[16px] text-[#6C7278]"
         >
-          < FaWhatsapp size={20} />
+          <FaWhatsapp size={20} />
           Share via WhatsApp
         </a>
       </div>
 
-      <HorizontalLine/>
+      <HorizontalLine />
     </section>
   );
 }
