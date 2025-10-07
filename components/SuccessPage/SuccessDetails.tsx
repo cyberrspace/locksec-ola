@@ -1,13 +1,12 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import PayLine from "./PayLine";
-import { useState } from "react";
+import PayLine from "../SummaryPage/PayLine";
+import { Check } from "lucide-react";
 
-export default function PaymentDetails() {
+export default function SuccessDetails() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [error, setError] = useState("");
 
   const bills = searchParams.get("bills") || "";
   const apartment = searchParams.get("apartment") || "";
@@ -18,49 +17,20 @@ export default function PaymentDetails() {
   const monthsAmt = months * monthlyRate;
   const totalAmt = monthsAmt + serviceCharge;
 
-  const handlePayment = () => {
-    if (!bills || !apartment || months <= 0) {
-      setError("Please fill all payment details correctly before proceeding.");
-      return;
-    }
-
-    // Ensure Paystack script is loaded
-    const { PaystackPop } = window;
-    if (!PaystackPop) {
-      alert("Payment system not ready. Please reload the page.");
-      return;
-    }
-
-    // ✅ Type-safe handler setup
-    const handler = PaystackPop.setup({
-      key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
-      email: "user@example.com", // Replace dynamically if you have user data
-      amount: totalAmt * 100, // Paystack expects amount in Kobo
-      currency: "NGN",
-      ref: "REF_" + Date.now().toString(), // unique transaction reference
-      callback: (response) => {
-        if (response.status === "success") {
-          router.push(
-            `/success?bills=${bills}&apartment=${apartment}&months=${months}`
-          );
-        } else {
-          alert("Transaction failed or was cancelled.");
-        }
-      },
-
-      onClose: () => {
-        alert("Transaction window closed.");
-      },
-    });
-
-    // ✅ open the Paystack iframe
-    handler.openIframe();
-  };
-
   return (
     <section className="min-h-screen bg-[#FFFFFF] flex flex-col justify-between px-4 py-10">
-      <div className="space-y-6">
-        {/* Bill Details */}
+      {/* Success Header */}
+      <div className="flex flex-col items-center mt-10 space-y-4">
+        <div className="bg-[#2ECC71] w-[70px] h-[70px] rounded-full flex justify-center items-center">
+          <Check className="text-white w-8 h-8" />
+        </div>
+        <p className="text-[#1A1C1E] font-[Rubik] font-[400] text-[20.09px] text-center">
+          Payment Successful
+        </p>
+      </div>
+
+      {/* Payment Details */}
+      <div className="space-y-6 mt-10">
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <p className="text-[#6C7278]">Type of Bill</p>
@@ -73,7 +43,6 @@ export default function PaymentDetails() {
           </div>
         </div>
 
-        {/* Payment Breakdown */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <p className="text-[#6C7278]">NO. of Month(s)</p>
@@ -93,7 +62,6 @@ export default function PaymentDetails() {
 
         <PayLine />
 
-        {/* Total */}
         <div className="flex justify-between items-center mt-10">
           <p className="text-[#6C7278]">Total Amt.</p>
           <p className="text-[#1A1C1E] font-semibold">
@@ -101,21 +69,28 @@ export default function PaymentDetails() {
           </p>
         </div>
 
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+        <PayLine />
       </div>
 
-      {/* Pay Button */}
-      <div className="mt-10 flex flex-col items-center">
+      {/* Action Buttons */}
+      <div className="flex justify-between items-center mt-8">
         <button
-          onClick={handlePayment}
-          className="bg-blue-600 text-white rounded-md w-[327px] h-[46px] hover:bg-blue-700"
+          onClick={() => router.push("/estate")}
+          className="text-[#375DFB] text-[14px] w-[140px] h-[40px] border border-[#375DFB] rounded-md"
         >
-          Complete Payment
+          Make New Payment
         </button>
+        <button
+          onClick={() => router.push("/user")}
+          className="text-[#375DFB] text-[14px] w-[140px] h-[40px] border border-[#375DFB] rounded-md"
+        >
+          Back to Dashboard
+        </button>
+      </div>
 
-        <div className="flex justify-center mt-4">
-          <div className="w-[148px] h-[3px] bg-[#000000]" />
-        </div>
+      {/* Bottom Line */}
+      <div className="flex justify-center mt-6">
+        <div className="w-[148px] h-[3px] bg-[#000000]" />
       </div>
     </section>
   );

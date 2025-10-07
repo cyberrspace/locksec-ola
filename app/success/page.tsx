@@ -1,7 +1,9 @@
 "use client";
 
+import { Suspense } from "react";
 import ContentWrapper from "@/components/common/ContentWrapper";
 import SuccessHero from "@/components/SuccessPage/SuccessHero";
+import SuccessDetails from "@/components/SuccessPage/SuccessDetails";
 
 
 
@@ -13,9 +15,9 @@ export default function CodePage(){
         <section>
         <SuccessHero/>
         </section>
-        <section>
-        
-        </section>
+       <Suspense fallback={<div>Loading payment details...</div>}>
+       <SuccessDetails/>        
+       </Suspense>
  
       </main>
      
