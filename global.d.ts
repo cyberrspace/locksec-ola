@@ -1,34 +1,26 @@
 // global.d.ts
-// --- Paystack minimal types used in the project ---
+
+export { };
 
 declare global {
-  interface PaystackSetupOptions {
-    key: string;
-    email: string;
-    amount: number; // in kobo
-    currency?: string;
-    ref?: string;
-    metadata?: Record<string, unknown>;
-    callback?: (response: {
-      status: string;
-      reference?: string;
-      [k: string]: unknown;
-    }) => void;
-    onClose?: () => void;
-  }
-
-  interface PaystackHandler {
-    openIframe: () => void;
-    // there might be other methods in some versions, add if needed
-  }
-
   interface PaystackPop {
-    setup: (opts: PaystackSetupOptions) => PaystackHandler;
+    setup: (options: {
+      key: string;
+      email: string;
+      amount: number;
+      currency?: string;
+      ref?: string;
+      onClose?: () => void;
+      callback?: (response: {
+        status: string;
+        reference?: string;
+      }) => void;
+    }) => {
+      openIframe: () => void;
+    };
   }
 
   interface Window {
-    PaystackPop?: PaystackPop;
+    PaystackPop: PaystackPop;
   }
 }
-
-export { };

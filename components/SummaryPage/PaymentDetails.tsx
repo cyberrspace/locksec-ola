@@ -1,8 +1,8 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import PayLine from "./PayLine";
-import { useState } from "react";
 
 export default function PaymentDetails() {
   const searchParams = useSearchParams();
@@ -18,49 +18,61 @@ export default function PaymentDetails() {
   const monthsAmt = months * monthlyRate;
   const totalAmt = monthsAmt + serviceCharge;
 
+  // Load Paystack script when component mounts
+  
+  useEffect(() => {
+    if (!document.querySelector('script[src="https://js.paystack.co/v1/inline.js"]')) {
+      const script = document.createElement("script");
+      script.src = "https://js.paystack.co/v1/inline.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+
+  // Payment Handler
   const handlePayment = () => {
     if (!bills || !apartment || months <= 0) {
       setError("Please fill all payment details correctly before proceeding.");
       return;
     }
 
-    // Ensure Paystack script is loaded
-    const { PaystackPop } = window;
-    if (!PaystackPop) {
+    const key = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+    if (!key) {
+      alert("Paystack key missing! Please check your environment variable.");
+      return;
+    }
+
+    // Ensure Paystack script has loaded
+    if (!window.PaystackPop || !window.PaystackPop.setup) {
       alert("Payment system not ready. Please reload the page.");
       return;
     }
 
-    // ✅ Type-safe handler setup
-    const handler = PaystackPop.setup({
-      key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
-      email: "user@example.com", // Replace dynamically if you have user data
-      amount: totalAmt * 100, // Paystack expects amount in Kobo
+    const handler = window.PaystackPop.setup({
+      key,
+      email: "user@example.com", // ideally replace with actual user email
+      amount: totalAmt * 100, // amount in kobo
       currency: "NGN",
-      ref: "REF_" + Date.now().toString(), // unique transaction reference
-      callback: (response) => {
-        if (response.status === "success") {
-          router.push(
-            `/success?bills=${bills}&apartment=${apartment}&months=${months}`
-          );
-        } else {
-          alert("Transaction failed or was cancelled.");
-        }
+      ref: "REF_" + Date.now(),
+      onClose: function () {
+        alert("Transaction was cancelled.");
       },
-
-      onClose: () => {
-        alert("Transaction window closed.");
+      callback: function (response: { status: string; reference?: string }) {
+        console.log("Payment successful:", response);
+        router.push(
+          `/success?bills=${bills}&apartment=${apartment}&months=${months}`
+        );
       },
     });
 
-    // ✅ open the Paystack iframe
     handler.openIframe();
   };
+
 
   return (
     <section className="min-h-screen bg-[#FFFFFF] flex flex-col justify-between px-4 py-10">
       <div className="space-y-6">
-        {/* Bill Details */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <p className="text-[#6C7278]">Type of Bill</p>
@@ -73,10 +85,9 @@ export default function PaymentDetails() {
           </div>
         </div>
 
-        {/* Payment Breakdown */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <p className="text-[#6C7278]">NO. of Month(s)</p>
+            <p className="text-[#6C7278]">No. of Month(s)</p>
             <p className="text-[#1A1C1E]">{months || "N/A"}</p>
           </div>
 
@@ -93,7 +104,6 @@ export default function PaymentDetails() {
 
         <PayLine />
 
-        {/* Total */}
         <div className="flex justify-between items-center mt-10">
           <p className="text-[#6C7278]">Total Amt.</p>
           <p className="text-[#1A1C1E] font-semibold">
@@ -104,7 +114,7 @@ export default function PaymentDetails() {
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
       </div>
 
-      {/* Pay Button */}
+      {/* ✅ Payment Button */}
       <div className="mt-10 flex flex-col items-center">
         <button
           onClick={handlePayment}
