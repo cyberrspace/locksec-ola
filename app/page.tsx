@@ -20,7 +20,11 @@ const LoadingPage: FC = () => {
   return (
     <ContentWrapper>
      
-      <section className="bg-[#0D0D1B] bg-cover bg-center bg-no-repeat w-full h-[812px] flex flex-col justify-between items-center px-4 py-6">
+      <section
+        className=" bg-cover bg-center bg-no-repeat w-full h-[812px] flex flex-col justify-between items-center px-4 py-6"
+        style={{ backgroundImage: "url('/icon/locksecbg.jpg')" }}
+      >
+
         {/* ===== Center Content ===== */}
         <div className="flex flex-col items-center justify-center flex-1">
           <Image
