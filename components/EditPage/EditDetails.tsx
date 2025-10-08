@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import RadioButton from "./RadioButton";
-import RegisterButton from "./RegisterButton";
 import IndustrySelect from "./IndusrtrySelect";
+import UpdateButton from "./UpdateButton";
 
 export default function RegisterForm() {
   const router = useRouter();
 
-
+  // ✅ State for all form data
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -28,12 +28,26 @@ export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
+  // ✅ Load existing data if editing
+  useEffect(() => {
+    const storedData = localStorage.getItem("userData");
+    if (storedData) {
+      const parsed = JSON.parse(storedData);
+      setFormData((prev) => ({
+        ...prev,
+        ...parsed, // prefill all editable fields from saved profile
+      }));
+    }
+  }, []);
+
+  // ✅ Handle changes in inputs
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // ✅ Handle save/update
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -43,34 +57,45 @@ export default function RegisterForm() {
       let savedLastName = formData.lastName.trim();
       let code = "";
 
+      // Only apply code logic for business owners
       if (formData.userType === "Business Owner") {
         code = Math.floor(100000 + Math.random() * 900000).toString();
         savedLastName = `${savedLastName}-${code}`;
       }
 
-      const userPayload = {
-        firstName: formData.firstName.trim(), // ✅ save firstName
+      // ✅ Create updated user data payload
+      const updatedUser = {
+        firstName: formData.firstName.trim(),
         lastName: savedLastName,
-        address: formData.address.trim(),     // ✅ save address
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        moveInDate: formData.moveInDate,
+        address: formData.address.trim(),
+        password: formData.password.trim(),
+        userType: formData.userType,
+        businessName: formData.businessName.trim(),
+        industry: formData.industry.trim(),
       };
 
-      localStorage.setItem("userData", JSON.stringify(userPayload));
+      // ✅ Save the updated profile to localStorage
+      localStorage.setItem("userData", JSON.stringify(updatedUser));
 
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      setSuccessMsg("Registration successful!");
+      setSuccessMsg("Profile updated successfully!");
 
+      // ✅ Redirect to /user (profile page) after short delay
       setTimeout(() => {
         router.push("/user");
       }, 1500);
     } catch (err) {
-      console.error("Error:", err);
+      console.error("Error updating profile:", err);
     } finally {
       setLoading(false);
     }
   };
 
-
+  // ✅ JSX Layout (unchanged, except tied to update logic)
   return (
     <div className="flex items-center min-h-screen justify-center px-4 py-6">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-[327px]">
@@ -169,7 +194,7 @@ export default function RegisterForm() {
           />
         </label>
 
-        {/*  Radio Buttons */}
+        {/* Radio Buttons */}
         <RadioButton
           value={formData.userType}
           onChange={(value) => setFormData((p) => ({ ...p, userType: value }))}
@@ -194,7 +219,9 @@ export default function RegisterForm() {
 
             <IndustrySelect
               value={formData.industry}
-              onChange={(val: string) => setFormData((p) => ({ ...p, industry: val }))}
+              onChange={(val: string) =>
+                setFormData((p) => ({ ...p, industry: val }))
+              }
             />
           </>
         )}
@@ -221,8 +248,9 @@ export default function RegisterForm() {
           </button>
         </label>
 
-        <RegisterButton
-          label={loading ? "Registering..." : "Register"}
+        {/* ✅ Update button updates the profile */}
+        <UpdateButton
+          label={loading ? "Updating..." : "Update"}
           disabled={loading}
         />
 
