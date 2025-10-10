@@ -21,12 +21,12 @@ export default function LoginHero() {
         </h2>
       </div>
 
-      <div className="w-[327px] h-[84px] opacity-100 rotate-0 space-y-4">
+      <div className="w-[327px] h-[84px] opacity-100 rotate-0 space-y-2">
         <p className="font-inter font-bold text-[32px] leading-[130%] tracking-[-0.02em] align-middle text-[#FFFFFF]">
           Sign in to your 
         </p>
         <p className="font-inter font-bold text-[32px] leading-[130%] tracking-[-0.02em] align-middle text-[#FFFFFF]">account</p>
-        <div className="flex flex-row items-center mt-0 gap-2">
+        <div className="flex flex-row items-center mt-0 gap-2 mb-2">
           <p className="font-inter font-medium text-[12px] leading-[130%] tracking-[-0.02em] text-[#FFFFFF]">
             Dont have an account?
           </p>
