@@ -9,7 +9,7 @@ interface ContentWrapperProps {
 export default function ContentWrapper({ children }: ContentWrapperProps) {
   return (
     <div
-      className="w-[375px]  min-h-screen rounded-[9px] opacity-100 bg-white shadow-md mx-auto"
+      className="w-[375px]  min-h-screen  opacity-100 bg-white  mx-auto"
       style={{ transform: "rotate(0deg)" }}>
       {children}
     </div>
