@@ -1,6 +1,7 @@
 "use client";
 
 import ContentWrapper from "@/components/common/ContentWrapper";
+import LoginTerms from "@/components/LoginPage/LoginTerms";
 import RegisterForm from "@/components/RegisterPage/RegisterForm";
 import RegisterHero from "@/components/RegisterPage/RegisterHero";
 
@@ -16,13 +17,11 @@ export default function RegisterPage() {
      
         <section className="w-full flex-1 bg-white px-4 sm:px-6 md:px-8 py-8">
           <RegisterForm />
+          <LoginTerms/>
         </section>
 
        
-        <div className="flex justify-center py-8 bg-white">
-          
-          <div className="w-36 h-[5px] bg-[#000000] rounded-full" />
-        </div>
+       
       </main>
     </ContentWrapper>
   );

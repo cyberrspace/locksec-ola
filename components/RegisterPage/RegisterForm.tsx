@@ -7,6 +7,7 @@ import RadioButton from "./RadioButton";
 import RegisterButton from "./RegisterButton";
 import IndustrySelect from "./IndusrtrySelect";
 
+
 export default function RegisterForm() {
   const router = useRouter();
 
@@ -232,6 +233,7 @@ export default function RegisterForm() {
           </p>
         )}
       </form>
+    
     </div>
   );
 }

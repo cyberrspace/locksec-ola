@@ -22,7 +22,7 @@ const LoadingPage: FC = () => {
      
       <section
         className=" bg-cover bg-center bg-no-repeat w-full h-[812px] flex flex-col justify-between items-center px-4 py-6"
-        style={{ backgroundImage: "url('/icon/locksecbg.jpg')" }}
+        style={{backgroundImage: "url('/icon/loadscreen.png')"}}
       >
 
         {/* ===== Center Content ===== */}
