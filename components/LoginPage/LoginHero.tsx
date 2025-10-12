@@ -4,7 +4,7 @@ import SignUpLink from "./SignUp";
 
 export default function LoginHero() {
   return (
-    <section className="w-full md:w-[375px]  h-[265px] space-y-[7rem]">
+    <section className="w-full md:w-[375px] px-4 h-[265px] space-y-[7rem]">
       
       <div className="flex flex-row flex-1 gap-2 -mt-8"> 
         <Image

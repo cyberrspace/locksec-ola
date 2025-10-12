@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AccessButton from "./AccessButton";
 import AccessCard from "./AccessCard";
+import { ChevronDown } from "lucide-react";
 
 export default function AccessForm() {
   const router = useRouter();
@@ -18,13 +19,12 @@ export default function AccessForm() {
     noOfPersons: "",
   });
 
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,12 +33,10 @@ export default function AccessForm() {
     setSuccessMsg("");
 
     try {
-      // simulate API/database call
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       setSuccessMsg("Access code generated successfully!");
 
-      // build query params
       const queryParams = new URLSearchParams({
         visitorType: formData.visitorType || "Guest",
         visitorsCount: formData.noOfPersons || "1",
@@ -57,7 +55,7 @@ export default function AccessForm() {
   };
 
   return (
-    <div className="flex items-center min-h-screen justify-center px-4 py-6">
+    <div className="flex items-center min-h-screen justify-center px-4 py-6 -mt-6">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-[327px]">
         <AccessCard />
 
@@ -71,7 +69,7 @@ export default function AccessForm() {
               type="text"
               name="firstName"
               value={formData.firstName}
-              onChange={handleChange}
+              onChange={(e) => handleChange("firstName", e.target.value)}
               required
               placeholder="First Name"
               className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 font-bold"
@@ -86,7 +84,7 @@ export default function AccessForm() {
               type="text"
               name="lastName"
               value={formData.lastName}
-              onChange={handleChange}
+              onChange={(e) => handleChange("lastName", e.target.value)}
               required
               placeholder="Last Name"
               className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 font-bold"
@@ -103,7 +101,7 @@ export default function AccessForm() {
             type="tel"
             name="phone"
             value={formData.phone}
-            onChange={handleChange}
+            onChange={(e) => handleChange("phone", e.target.value)}
             required
             placeholder="Phone Number"
             className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 font-bold"
@@ -119,67 +117,73 @@ export default function AccessForm() {
             type="number"
             name="noOfPersons"
             value={formData.noOfPersons}
-            onChange={handleChange}
+            onChange={(e) => handleChange("noOfPersons", e.target.value)}
             required
             placeholder="0"
             className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 font-bold"
           />
         </label>
 
-        {/* Visitor Type */}
-        <label className="block text-[12px]">
-          <span className="block mb-1">
-            Visitor Type <span className="text-red-500">*</span>
-          </span>
-          <select
-            name="visitorType"
-            value={formData.visitorType}
-            onChange={handleChange}
-            required
-            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
-          >
-            <option value="">Select</option>
-            <option value="Guest">Guest</option>
-            <option value="Dispatch">Dispatch</option>
-            <option value="Cab">Cab</option>
-            <option value="Artisan">Artisan</option>
-          </select>
-        </label>
+        {/* Type of Visitor */}
+       
 
-        {/* Vehicles */}
-        <label className="block text-[12px]">
+        {/* Coming Vehicles */}
+        <div className="block text-[12px]">
           <span className="block mb-1">
             Coming Vehicles <span className="text-red-500">*</span>
           </span>
-          <select
-            name="vehicles"
-            value={formData.vehicles}
-            onChange={handleChange}
-            required
-            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
-          >
-            <option value="">Select</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </select>
-        </label>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() =>
+                setOpenDropdown(openDropdown === "vehicles" ? null : "vehicles")
+              }
+              className="w-full h-[47px] px-3 pr-10 border rounded-md text-left flex justify-between items-center focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <span>{formData.vehicles ? formData.vehicles : "Select"}</span>
+              <ChevronDown
+                className={`w-4 h-4 text-gray-500 transition-transform ${openDropdown === "vehicles" ? "rotate-180" : ""
+                  }`}
+              />
+            </button>
 
-        {/* Plate Number */}
-        <label className="block text-[12px]">
-          <span className="block mb-1">
-            Plate number <span className="text-red-500">*</span>
-          </span>
-          <input
-            type="text"
-            pattern="[A-Za-z0-9]+"
-            name="plate"
-            value={formData.plate}
-            onChange={handleChange}
-            required
-            placeholder="Plate Number"
-            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 font-bold"
-          />
-        </label>
+            {openDropdown === "vehicles" && (
+              <div className="mt-2 border rounded-md bg-white shadow-md">
+                {["Yes", "No"].map((option) => (
+                  <div
+                    key={option}
+                    onClick={() => {
+                      handleChange("vehicles", option);
+                      setOpenDropdown(null);
+                    }}
+                    className="px-3 py-2 cursor-pointer hover:bg-gray-100"
+                  >
+                    {option}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Plate Number — show only if vehicles === "Yes" */}
+        {formData.vehicles === "Yes" && (
+          <label className="block text-[12px]">
+            <span className="block mb-1">
+              Plate number <span className="text-red-500">*</span>
+            </span>
+            <input
+              type="text"
+              pattern="[A-Za-z0-9]+"
+              name="plate"
+              value={formData.plate}
+              onChange={(e) => handleChange("plate", e.target.value)}
+              required
+              placeholder="Plate Number"
+              className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 font-bold"
+            />
+          </label>
+        )}
 
         {/* Submit button */}
         <AccessButton

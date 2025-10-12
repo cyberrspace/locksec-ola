@@ -19,7 +19,7 @@ export default function CodeDetails() {
   const [status, setStatus] = useState("Inactive");
   const [copied, setCopied] = useState(false);
 
-  // ✅ State for userData
+ 
   const [userData, setUserData] = useState<{ firstName: string; address: string } | null>(null);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function CodeDetails() {
     setCode(generatedCode);
     setStatus("Active");
 
-    // ✅ Fetch user data from localStorage
+    
     const stored = localStorage.getItem("userData");
     if (stored) {
       setUserData(JSON.parse(stored));
@@ -52,7 +52,7 @@ Plate Number: ${plateNumber}`;
     <section className="min-h-screen bg-[#FFFFFF] text-white flex flex-col items-center px-4 py-10">
       <div className="bg-[#FFFFFF] w-full max-w-md rounded-xl p-4  space-y-6">
 
-        {/* Code + Copy */}
+       
         <div className="flex justify-between items-center">
           <h2 className="text-3xl font-extrabold text-[#1A1C1E] ">{code}</h2>
           <button

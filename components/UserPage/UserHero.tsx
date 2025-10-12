@@ -19,8 +19,9 @@ export default function UserHero() {
   }, []);
 
   return (
-    <main className="h-[219px] w-full flex items-center"> {/* 👈 fill height & push down */}
-      <section className="w-full px-2 sm:px-4 pb-4"> {/* 👈 add bottom padding for breathing room */}
+    <main className="h-[219px] w-full flex items-center justify-center -mt-4">
+ 
+      <section className="w-full px-2 sm:px-4 pb-4"> 
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div
