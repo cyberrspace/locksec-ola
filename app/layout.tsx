@@ -31,7 +31,7 @@ export default function RootLayout({
         <Script src="https://js.paystack.co/v1/inline.js" strategy="beforeInteractive" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
       >
        
         {children}
