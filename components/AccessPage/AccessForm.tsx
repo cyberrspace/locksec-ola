@@ -6,6 +6,7 @@ import AccessButton from "./AccessButton";
 import AccessCard from "./AccessCard";
 import { ChevronDown } from "lucide-react";
 
+
 export default function AccessForm() {
   const router = useRouter();
 
@@ -34,7 +35,6 @@ export default function AccessForm() {
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
-
       setSuccessMsg("Access code generated successfully!");
 
       const queryParams = new URLSearchParams({
@@ -55,9 +55,12 @@ export default function AccessForm() {
   };
 
   return (
-    <div className="flex items-center min-h-screen justify-center px-4 py-6 -mt-6">
+    <div className="flex items-start justify-center px-4 py-4 mt-4">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-[327px]">
-        <AccessCard />
+        
+
+        {/* Visitor Type Dropdown (pushes down items below) */}
+        <AccessCard onSelect={(val) => handleChange("visitorType", val)} />
 
         {/* First & Last Name */}
         <div className="flex gap-4 w-full">
@@ -124,21 +127,20 @@ export default function AccessForm() {
           />
         </label>
 
-        {/* Type of Visitor */}
-       
-
         {/* Coming Vehicles */}
         <div className="block text-[12px]">
           <span className="block mb-1">
             Coming Vehicles <span className="text-red-500">*</span>
           </span>
+
           <div className="relative">
             <button
               type="button"
               onClick={() =>
                 setOpenDropdown(openDropdown === "vehicles" ? null : "vehicles")
               }
-              className="w-full h-[47px] px-3 pr-10 border rounded-md text-left flex justify-between items-center focus:ring-2 focus:ring-blue-500 bg-white"
+              className="w-full h-[47px] px-3 pr-10 border rounded-md text-left 
+                         flex justify-between items-center focus:ring-2 focus:ring-blue-500 bg-white"
             >
               <span>{formData.vehicles ? formData.vehicles : "Select"}</span>
               <ChevronDown
@@ -147,26 +149,32 @@ export default function AccessForm() {
               />
             </button>
 
-            {openDropdown === "vehicles" && (
-              <div className="mt-2 border rounded-md bg-white shadow-md">
-                {["Yes", "No"].map((option) => (
-                  <div
-                    key={option}
-                    onClick={() => {
-                      handleChange("vehicles", option);
-                      setOpenDropdown(null);
-                    }}
-                    className="px-3 py-2 cursor-pointer hover:bg-gray-100"
-                  >
-                    {option}
-                  </div>
-                ))}
-              </div>
-            )}
+            {/* Dropdown pushes down below items */}
+            <div
+              className={`transition-all duration-300 overflow-hidden ${openDropdown === "vehicles" ? "max-h-32 mt-2 opacity-100" : "max-h-0 opacity-0"
+                }`}
+            >
+              {openDropdown === "vehicles" && (
+                <div className="border rounded-md bg-white shadow-md">
+                  {["Yes", "No"].map((option) => (
+                    <div
+                      key={option}
+                      onClick={() => {
+                        handleChange("vehicles", option);
+                        setOpenDropdown(null);
+                      }}
+                      className="px-3 py-2 cursor-pointer hover:bg-gray-100"
+                    >
+                      {option}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Plate Number — show only if vehicles === "Yes" */}
+        {/* Plate Number (shows only if "Yes") */}
         {formData.vehicles === "Yes" && (
           <label className="block text-[12px]">
             <span className="block mb-1">
@@ -185,7 +193,7 @@ export default function AccessForm() {
           </label>
         )}
 
-        {/* Submit button */}
+        {/* Submit Button */}
         <AccessButton
           label={loading ? "Generating..." : "Generate access code"}
           disabled={loading}

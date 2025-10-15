@@ -88,10 +88,8 @@ export default function SuccessDetails() {
         </button>
       </div>
 
-      {/* Bottom Line */}
-      <div className="flex justify-center mt-6">
-        <div className="w-[148px] h-[3px] bg-[#000000]" />
-      </div>
+     
+     
     </section>
   );
 }

@@ -1,38 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Copy } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
-import { useRouter, useSearchParams } from "next/navigation";
-import HorizontalLine from "../UserPage/horizontalLine";
+import VisitorCodeCard from "@/components/VisitorCodePage/VisitorCodeCard";
+import WhatsAppButton from "@/components/WhatsAppCode/WhatsAppButton";
+import { useSearchParams } from "next/navigation";
 
 export default function CodeDetails() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const visitorType = searchParams.get("visitorType") || "Visitor";
-  const visitorsCount = searchParams.get("visitorsCount") || "1";
-  const plateNumber = searchParams.get("plateNumber") || "N/A";
-  const name = searchParams.get("name") || "Guest";
-
+  const params = useSearchParams();
   const [code, setCode] = useState("");
-  const [status, setStatus] = useState("Inactive");
   const [copied, setCopied] = useState(false);
+  const [visitorData, setVisitorData] = useState({
+    visitorType: "Guest",
+    visitorsCount: "1",
+    visitorName: "John Doe",
+    plateNumber: "ABC-123",
+    validFrom: "",
+    validUntil: "",
+    address: "",
+  });
 
- 
-  const [userData, setUserData] = useState<{ firstName: string; address: string } | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-    setCode(generatedCode);
-    setStatus("Active");
+    const generatedCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const now = new Date();
+    const until = new Date(now.getTime() + 3 * 60 * 60 * 1000);
 
-    
-    const stored = localStorage.getItem("userData");
-    if (stored) {
-      setUserData(JSON.parse(stored));
-    }
-  }, []);
+    const format = (d: Date) =>
+      `${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ${d.toLocaleDateString()}`;
+
+    const storedUser = JSON.parse(localStorage.getItem("userData") || "{}");
+
+    setCode(generatedCode);
+    setVisitorData({
+      visitorType: params.get("visitorType") || "Guest",
+      visitorsCount: params.get("visitorsCount") || "1",
+      visitorName: params.get("visitorName") || "John Doe",
+      plateNumber: params.get("plateNumber") || "N/A",
+      validFrom: format(now),
+      validUntil: format(until),
+      address: storedUser.address || "Not available",
+    });
+  }, [params]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
@@ -40,96 +50,76 @@ export default function CodeDetails() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const whatsappMessage = `Visitor Access Code: ${code}
-  Status: ${status}
-Visitor Type: ${visitorType} (${visitorsCount} people)
-Visitor Name: ${name}
-Plate Number: ${plateNumber}`;
-
-  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappText = `Hello, your access code is ${code}. Valid from ${visitorData.validFrom} to ${visitorData.validUntil}. Powered by http://Locsec.africa`;
 
   return (
-    <section className="min-h-screen bg-[#FFFFFF] text-white flex flex-col items-center px-4 py-10">
-      <div className="bg-[#FFFFFF] w-full max-w-md rounded-xl p-4  space-y-6">
-
-       
-        <div className="flex justify-between items-center">
-          <h2 className="text-3xl font-extrabold text-[#1A1C1E] ">{code}</h2>
-          <button
-            onClick={handleCopy}
-            className="flex items-center text-sm text-[#ACB5BB] hover:opacity-80"
-          >
-            <Copy size={18} className="mr-1" />
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        </div>
-
-        {/* Status */}
-        <p className="text-sm font-normal text-[16px] text-[#6C7278] flex justify-between">
-          Status: <span className="text-green-400 font-semibold">{status}</span>
-        </p>
-
-        {/* Required Info only */}
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="font-normal text-[16px] text-[#6C7278]">Number of Visitors</span>
-            <span className="font-normal text-[16px] text-[#1A1C1E]">
-              {visitorType} ({visitorsCount} people)
-            </span>
-          </div>
-
-          <div className="flex justify-between">
-            <span className="font-normal text-[16px] text-[#6C7278]">Visitor Name</span>
-            <span className="font-normal text-[16px] text-[#1A1C1E]">{name}</span>
-          </div>
-
-          <div className="flex justify-between">
-            <span className="font-normal text-[16px] text-[#6C7278]">Plate Number</span>
-            <span className="font-normal text-[16px] text-[#1A1C1E]">{plateNumber}</span>
-          </div>
-        </div>
-
-        {/* ✅ For Section - now dynamic */}
-        <div className="space-y-4">
-          <p className="font-normal text-[16px] text-[#6C7278]">For:</p>
-          <div className="flex justify-between">
-            <p className="font-normal text-[16px] text-[#6C7278]">
-              {userData?.firstName || "User"}
-            </p>
-            <p className="font-normal text-[16px] text-[#1A1C1E]">
-              {userData?.address || "No Address"}
-            </p>
-          </div>
-        </div>
-
-        {/* Buttons */}
-        <div className="flex justify-between pt-4">
-          <button
-            onClick={() => window.location.reload()}
-            className=" px-4 py-2 font-medium text-[14px] text-[#375DFB] w-[105px] h-[40px]"
-          >
-            Generate New Code
-          </button>
-          <button
-            onClick={() => router.push("/user")}
-            className=" px-4 py-2  font-medium text-[14px] text-[#375DFB]  w-[105px] h-[40px]"
-          >
-            Go to User Page
-          </button>
-        </div>
-
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2  hover:bg-green-500 px-4 py-2 mt-8 font-normal text-[16px] text-[#6C7278]"
+    <section className="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-extrabold text-[#1A1C1E]">{code}</h2>
+        <button
+          onClick={handleCopy}
+          className="flex items-center text-sm text-[#375DFB] hover:underline"
         >
-          <FaWhatsapp size={20} />
-          Share via WhatsApp
-        </a>
+          <Copy size={16} className="mr-1" />
+          {copied ? "Copied!" : "Copy"}
+        </button>
       </div>
 
-      <HorizontalLine />
+      <div className="mt-4 text-sm text-gray-700 space-y-1">
+        <p className="flex justify-between">
+          <strong>Visitor Type:</strong>
+          <p>{visitorData.visitorType} ({visitorData.visitorsCount})</p>
+        </p>
+        <p className="flex justify-between">
+          <strong>Visitor Name:</strong>
+          <p>{visitorData.visitorName}</p>
+        </p>
+        <p className="flex justify-between">
+          <strong>Plate Number:</strong>
+          <p>{visitorData.plateNumber}</p>
+        </p>
+        <p className="flex justify-between">
+          <strong>Valid From:</strong>
+          <p>{visitorData.validFrom}</p>
+        </p>
+        <p className="flex justify-between">
+          <strong>Until:</strong>
+          <p>{visitorData.validUntil}</p>
+        </p>
+        <p className="flex justify-between">
+          <strong>Address:</strong>
+          <p>{visitorData.address}</p>
+        </p>
+      </div>
+
+      {/* WhatsApp share button */}
+      <div className="mt-6">
+        <WhatsAppButton targetRef={cardRef} message={whatsappText} />
+      </div>
+
+      {/* Hidden/visible card */}
+      <div className="mt-6" ref={cardRef}>
+        <VisitorCodeCard
+          code={code}
+          validFrom={visitorData.validFrom}
+          validUntil={visitorData.validUntil}
+          address={visitorData.address}
+          visitorType={visitorData.visitorType}
+          visitorsCount={visitorData.visitorsCount}
+          visitorName={visitorData.visitorName}
+          plateNumber={visitorData.plateNumber}
+        />
+      </div>
+
+      {/* Copyable message text */}
+      <div className="mt-4 border-t pt-3">
+        <p className="text-xs text-gray-600">Message (copyable):</p>
+        <textarea
+          readOnly
+          value={whatsappText}
+          className="w-full text-xs border rounded-md p-2 mt-1 text-gray-700 resize-none"
+        />
+      </div>
     </section>
   );
 }

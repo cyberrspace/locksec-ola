@@ -35,7 +35,8 @@ export default function HistoryDetails() {
   }, []);
 
   return (
-    <section className="min-h-screen bg-white text-[#1A1C1E] px-4 py-10 flex flex-col justify-between items-center">
+
+    <section className="min-h-screen text-[#1A1C1E] px-4 py-10 flex flex-col justify-between   items-center">
       <div className="w-full flex flex-col items-center">
         {/* Tabs */}
         <div className="flex justify-center gap-4 mb-8">
@@ -105,11 +106,6 @@ export default function HistoryDetails() {
           </div>
         )}
       </div>
-
-      {/* Line at bottom */}
-      <div className="flex justify-center mt-10 mb-4">
-        <div className="w-[148px] h-[5px] bg-[#000000] rounded-full" />
-      </div>
-    </section>
+       </section>
   );
 }
