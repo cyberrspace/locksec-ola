@@ -1,87 +1,81 @@
 "use client";
 
-import html2canvas from "html2canvas";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { MessageCircle } from "lucide-react";
+import { useEffect, useState, RefObject } from "react";
+import * as htmlToImage from "html-to-image";
 
 interface WhatsAppButtonProps {
-  targetRef: React.RefObject<HTMLDivElement | null>;
-  message: string;
+  targetRef: RefObject<HTMLDivElement | null>;
+  code: string;
+  validFrom: string;
+  validUntil: string;
 }
 
-export default function WhatsAppButton({ targetRef, message }: WhatsAppButtonProps) {
-  const [loading, setLoading] = useState(false);
+export default function WhatsAppButton({
+  targetRef,
+  code,
+  validFrom,
+  validUntil,
+}: WhatsAppButtonProps) {
+  const [address, setAddress] = useState("");
+
+  // 🔄 Fetch dynamic address from localStorage (saved in RegisterForm)
+  useEffect(() => {
+    const data = localStorage.getItem("userData");
+    if (data) {
+      const parsed = JSON.parse(data);
+      setAddress(parsed.address || "");
+    }
+  }, []);
 
   const handleShare = async () => {
-    if (!targetRef?.current) {
-      alert("Visitor card not found.");
-      return;
-    }
+    if (!targetRef.current) return;
+
+    // Define the message to be shared
+    const message = `Hello, your access code is ${code}.
+          Valid from ${validFrom} to ${validUntil}.
+          Powered by http://Locsec.africa
+          Address: ${address}`;
 
     try {
-      setLoading(true);
-
-      // Capture visitor card as image
-      const canvas = await html2canvas(targetRef.current, {
-        useCORS: true,
-        scale: 2,
-      });
-
-      const blob = await new Promise<Blob | null>((resolve) =>
-        canvas.toBlob((b) => resolve(b), "image/png")
-      );
-
-      if (!blob) {
-        alert("Could not create image.");
-        setLoading(false);
-        return;
-      }
-
+      const dataUrl = await htmlToImage.toPng(targetRef.current);
+      const blob = await (await fetch(dataUrl)).blob();
       const file = new File([blob], "visitor-card.png", { type: "image/png" });
 
-      // ✅ Check if Web Share API (with files) is supported
-      const canShareFiles =
-        typeof navigator !== "undefined" &&
-        !!navigator.canShare &&
-        navigator.canShare({ files: [file] });
-
-      if (canShareFiles) {
-        // ✅ Works on Android/iOS
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
           text: message,
           title: "Visitor Code",
         });
       } else {
-        // ✅ Fallback for desktop browsers (WhatsApp Web)
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, "_blank");
-
-        // Trigger a download of the visitor card image
-        const link = document.createElement("a");
-        link.href = canvas.toDataURL("image/png");
-        link.download = "visitor-card.png";
-        link.click();
+        const encoded = encodeURIComponent(message);
+        window.open(`https://wa.me/?text=${encoded}`, "_blank");
       }
     } catch (err) {
-      console.error("Error sharing to WhatsApp:", err);
-      // ⚙️ Don’t block the user with alert — gracefully fallback
-      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, "_blank");
-    } finally {
-      setLoading(false);
+      console.error("Error sharing:", err);
     }
   };
 
+
   return (
-    <Button
-      onClick={handleShare}
-      className="bg-[#25D366] hover:bg-[#1DA955] text-white flex items-center justify-center space-x-2 w-full rounded-lg"
-      disabled={loading}
-    >
-      <MessageCircle size={18} />
-      <span>{loading ? "Preparing..." : "Share on WhatsApp"}</span>
-    </Button>
+    <div className="flex flex-col items-center gap-3">
+      {/* WhatsApp Share Button */}
+      <button
+        onClick={handleShare}
+        className="bg-green-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700 transition"
+      >
+        Share on WhatsApp
+      </button>
+
+      {/* Copyable message preview */}
+      <textarea
+        readOnly
+        value={`Hello, your access code is ${code}.
+          Valid from ${validFrom} to ${validUntil}.
+          Powered by http://Locsec.africa
+          Address: ${address}`}
+        className="w-[320px] h-[100px] text-sm border rounded-md p-2 resize-none"
+      />
+    </div>
   );
 }

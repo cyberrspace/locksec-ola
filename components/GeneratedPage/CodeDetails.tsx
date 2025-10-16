@@ -94,7 +94,18 @@ export default function CodeDetails() {
 
       {/* WhatsApp share button */}
       <div className="mt-6">
-        <WhatsAppButton targetRef={cardRef} message={whatsappText} />
+        {/* WhatsApp share button */}
+        <div className="mt-6">
+          <WhatsAppButton
+            targetRef={cardRef}
+            code={code}
+            validFrom={visitorData.validFrom}
+            validUntil={visitorData.validUntil}
+          />
+        </div>
+
+
+
       </div>
 
       {/* Hidden/visible card */}
