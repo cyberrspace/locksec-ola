@@ -15,7 +15,7 @@ export default function UserPage() {
        <section className="w-full flex-1">
           <UserBody />
         </section>
-    </main>
+     </main>
     </ContentWrapper>
   );
 }
