@@ -3,14 +3,13 @@
 import { useEffect, useState } from "react";
 import { MapPin, Download } from "lucide-react";
 
-// Type for the beforeinstallprompt event
+// Define the BeforeInstallPromptEvent type
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
   readonly userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
   prompt(): Promise<void>;
 }
 
-// UserData interface
 interface UserData {
   lastName: string;
   address: string;
@@ -18,39 +17,43 @@ interface UserData {
 
 export default function UserHero() {
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null); // store install event
-  const [isInstallable, setIsInstallable] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
-    // Retrieve stored user data
     const stored = localStorage.getItem("userData");
     if (stored) {
       setUserData(JSON.parse(stored));
     }
 
-    // Listen for the PWA install prompt event
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault(); // Prevent auto prompt
-      setDeferredPrompt(e as BeforeInstallPromptEvent); // Save the event for later
-      setIsInstallable(true);
+    // Listen for beforeinstallprompt
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("beforeinstallprompt", handler);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("beforeinstallprompt", handler);
     };
   }, []);
 
-  // Handle install button click
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt(); // show install prompt
+    if (!deferredPrompt) {
+      alert("Install prompt not available yet. Try refreshing the page.");
+      return;
+    }
+
+    deferredPrompt.prompt();
 
     const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User response: ${outcome}`);
+    if (outcome === "accepted") {
+      console.log("✅ User accepted the install prompt");
+    } else {
+      console.log("❌ User dismissed the install prompt");
+    }
+
     setDeferredPrompt(null);
-    setIsInstallable(false);
   };
 
   return (
@@ -75,15 +78,13 @@ export default function UserHero() {
             </div>
           </div>
 
-          {/* Download (Install App) Button */}
+          {/* Install App Button */}
           <button
             onClick={handleInstallClick}
-            disabled={!isInstallable}
-            className={`flex items-center justify-center
-                        w-[37.29px] h-[37.29px]
-                        rounded-full transition cursor-pointer
-                        ${isInstallable ? "bg-blue-600 hover:bg-blue-700 cursor-pointer" : "bg-blue-500 cursor-not-allowed"}`}
-            title={isInstallable ? "Install App" : "App already installed"}
+            className="flex items-center justify-center
+                       w-[37.29px] h-[37.29px]
+                       rounded-full bg-blue-600
+                       hover:bg-blue-700 cursor-pointer transition"
           >
             <Download className="text-white w-[20px] h-[20px]" />
           </button>
