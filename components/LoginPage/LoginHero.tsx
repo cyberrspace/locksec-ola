@@ -6,7 +6,7 @@ export default function LoginHero() {
   return (
     <section className="w-full md:w-[375px] px-4 h-[265px] space-y-[7rem]">
       
-      <div className="flex flex-row flex-1 gap-2 -mt-8"> 
+      <div className="flex flex-row flex-1 gap-2 mt-10"> 
         <Image
           src="/icons/lock-logo.png"
           alt="Locksec"

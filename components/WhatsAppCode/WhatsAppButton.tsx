@@ -20,7 +20,7 @@ export default function WhatsAppButton({
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ Load user address from localStorage
+  //  Load user address from localStorage
   useEffect(() => {
     const data = localStorage.getItem("userData");
     if (data) {
@@ -29,13 +29,13 @@ export default function WhatsAppButton({
     }
   }, []);
 
-  // ✅ This is the text that will appear inside WhatsApp
+  //  This is the text that will appear inside WhatsApp
   const message = `Hello, your access code is ${code}.
 Valid from ${validFrom} to ${validUntil}.
 Address: ${address}
 Powered by http://Locsec.africa`;
 
-  // ✅ Main share handler
+  // Main share handler
   const handleShare = async () => {
     if (!targetRef.current) {
       alert("Card not ready yet, please wait a moment.");
@@ -53,22 +53,22 @@ Powered by http://Locsec.africa`;
       const blob = await (await fetch(dataUrl)).blob();
       const file = new File([blob], "visitor-card.png", { type: "image/png" });
 
-      // ✅ Native mobile share (works on Android Chrome, iOS Safari)
+      //  Native mobile share (works on Android Chrome, iOS Safari)
       if (navigator.canShare && navigator.canShare({ files: [file], text: message })) {
         await navigator.share({
           files: [file], // the captured image
           text: message, // the message (appears with image)
           title: "Visitor Code", // optional title
         });
-        console.log("✅ Shared successfully via navigator.share()");
+        console.log("Shared successfully via navigator.share()");
       } else {
-        // ✅ Fallback: open WhatsApp Web with text only
+        //  Fallback: open WhatsApp Web with text only
         const encoded = encodeURIComponent(message);
         window.open(`https://wa.me/?text=${encoded}`, "_blank");
         console.warn("⚠️ navigator.share not supported. Used fallback to WhatsApp Web.");
       }
     } catch (err) {
-      console.error("❌ Error sharing:", err);
+      console.error(" Error sharing:", err);
       alert("Failed to share. Try again or check your connection.");
     } finally {
       setLoading(false);
