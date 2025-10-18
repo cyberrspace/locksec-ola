@@ -11,13 +11,13 @@ export default function ContentWrapper({ children }: ContentWrapperProps) {
     <div
       className="
         w-full 
-        max-w-md 
+        md:w-[375px] 
         min-h-screen 
-        rounded-[9px] 
         bg-white 
         shadow-md 
         mx-auto 
-        px-4 sm:px-6 md:px-8 
+        rounded-none md:rounded-[9px]
+        px-0 sm:px-0
       "
       style={{ transform: "rotate(0deg)" }}
     >

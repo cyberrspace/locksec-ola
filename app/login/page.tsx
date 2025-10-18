@@ -1,25 +1,19 @@
 "use client";
 
 import ContentWrapper from "@/components/common/ContentWrapper";
-import LoginHero from "@/components/LoginPage/LoginHero";
-import LoginTwo from "@/components/LoginPage/LoginTwo";
-import LoginButton from "@/components/LoginPage/LoginButton";
+import HistoryDetails from "@/components/HistoryPage/HistoryDetails";
+import HistoryHero from "@/components/HistoryPage/HistoryHero";
 
-
-export default function LoginPage() {
+export default function CodePage() {
   return (
     <ContentWrapper>
-      <main className="flex flex-col min-h-screen w-full space-y-6">
-      
-        <section className="w-full bg-[#0D0D1B] py-10 sm:py-12 md:py-16">
-          <LoginHero />
+      <main className="min-h-screen w-full overflow-x-hidden overflow-y-auto">
+        <section className="w-full">
+          <HistoryHero />
         </section>
 
-       
-        <section className="flex flex-col items-center justify-center w-full flex-1 gap-6 px-4 sm:px-6 md:px-8 bg-transparent">
-          <LoginTwo />
-          <LoginButton />
-         
+        <section className="w-full px-4 sm:px-6">
+          <HistoryDetails />
         </section>
       </main>
     </ContentWrapper>
