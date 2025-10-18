@@ -10,7 +10,7 @@ export default function EstatePaymentForm() {
   const [months, setMonths] = useState("1");
   const [amount, setAmount] = useState(28000); // default for 1 month
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [apartment, setApartment] = useState("Apt 12B Road M"); // <-- added apartment input
+  const [apartment, setApartment] = useState("Apt 12B Road M");
 
   const monthlyRate = 28000; // fixed monthly subscription
 
@@ -38,16 +38,16 @@ export default function EstatePaymentForm() {
   };
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex justify-center items-center px-4 sm:px-6 md:px-8 py-6">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-4 flex flex-col gap-4 w-[350px]"
+        className="bg-white p-4 flex flex-col gap-4 w-full max-w-[350px] rounded-lg shadow-sm"
       >
         {/* Estate Bill Selection */}
         <div className="relative">
           <label className="block text-sm font-medium mb-1">Estate Bill</label>
           <div
-            className="border rounded-md px-3 flex items-center justify-between cursor-pointer w-[327px] h-[46px]"
+            className="border rounded-md px-3 flex items-center justify-between cursor-pointer w-full h-[46px]"
             onClick={() => setDropdownOpen(!dropdownOpen)}
           >
             <span>
@@ -58,7 +58,7 @@ export default function EstatePaymentForm() {
             <span className="text-gray-500">{dropdownOpen ? "▲" : "▼"}</span>
           </div>
           {dropdownOpen && (
-            <div className="absolute bg-white border rounded-md shadow-md mt-1 w-[327px] p-2 z-10">
+            <div className="absolute bg-white border rounded-md shadow-md mt-1 w-full p-2 z-10">
               {["Estate dues", "Utility (Water)", "Project", "Others"].map(
                 (bill) => (
                   <label key={bill} className="flex items-center gap-2 mb-2">
@@ -82,7 +82,7 @@ export default function EstatePaymentForm() {
             type="text"
             value={apartment}
             onChange={(e) => setApartment(e.target.value)}
-            className="border rounded-md px-3 w-[327px] h-[46px]"
+            className="border rounded-md px-3 w-full h-[46px]"
           />
         </div>
 
@@ -92,7 +92,7 @@ export default function EstatePaymentForm() {
           <select
             value={months}
             onChange={(e) => handleMonthsChange(e.target.value)}
-            className="border rounded-md px-4 w-[327px] h-[46px] pr-8"
+            className="border rounded-md px-4 w-full h-[46px] pr-8"
           >
             {[...Array(12)].map((_, i) => (
               <option key={i + 1} value={i + 1}>
@@ -111,15 +111,15 @@ export default function EstatePaymentForm() {
             type="text"
             value={`₦${amount.toLocaleString()}`}
             readOnly
-            className="border rounded-md px-3 w-[327px] h-[46px] bg-gray-100 font-bold"
+            className="border rounded-md px-3 w-full h-[46px] bg-gray-100 font-bold"
           />
         </div>
 
         {/* Submit */}
-        <div className="mt-[8rem]">
+        <div className="mt-16">
           <button
             type="submit"
-            className="bg-blue-600 text-white rounded-md w-[327px] h-[46px] hover:bg-blue-700 "
+            className="bg-blue-600 text-white rounded-md w-full h-[46px] hover:bg-blue-700 transition-colors"
           >
             Make Payment
           </button>

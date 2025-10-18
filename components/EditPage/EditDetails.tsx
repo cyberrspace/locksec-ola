@@ -10,7 +10,6 @@ import UpdateButton from "./UpdateButton";
 export default function RegisterForm() {
   const router = useRouter();
 
-  // ✅ State for all form data
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -28,26 +27,23 @@ export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
-  // ✅ Load existing data if editing
   useEffect(() => {
     const storedData = localStorage.getItem("userData");
     if (storedData) {
       const parsed = JSON.parse(storedData);
       setFormData((prev) => ({
         ...prev,
-        ...parsed, // prefill all editable fields from saved profile
+        ...parsed,
       }));
     }
   }, []);
 
-  // ✅ Handle changes in inputs
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Handle save/update
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -57,34 +53,20 @@ export default function RegisterForm() {
       let savedLastName = formData.lastName.trim();
       let code = "";
 
-      // Only apply code logic for business owners
       if (formData.userType === "Business Owner") {
         code = Math.floor(100000 + Math.random() * 900000).toString();
         savedLastName = `${savedLastName}-${code}`;
       }
 
-      // ✅ Create updated user data payload
       const updatedUser = {
-        firstName: formData.firstName.trim(),
+        ...formData,
         lastName: savedLastName,
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
-        moveInDate: formData.moveInDate,
-        address: formData.address.trim(),
-        password: formData.password.trim(),
-        userType: formData.userType,
-        businessName: formData.businessName.trim(),
-        industry: formData.industry.trim(),
       };
 
-      // ✅ Save the updated profile to localStorage
       localStorage.setItem("userData", JSON.stringify(updatedUser));
-
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
       setSuccessMsg("Profile updated successfully!");
 
-      // ✅ Redirect to /user (profile page) after short delay
       setTimeout(() => {
         router.push("/user");
       }, 1500);
@@ -95,13 +77,16 @@ export default function RegisterForm() {
     }
   };
 
-  // ✅ JSX Layout (unchanged, except tied to update logic)
   return (
-    <div className="flex items-center min-h-screen justify-center px-4 py-6">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-[327px]">
+    <div className="flex items-center min-h-screen justify-center bg-white">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-4 w-full max-w-[327px] sm:max-w-md md:max-w-lg lg:max-w-xl 
+                   px-0 sm:px-2 md:px-4 py-6 mx-auto"
+      >
         {/* First & Last Name */}
-        <div className="flex gap-4 w-full">
-          <label className="block text-[12px] w-[155px]">
+        <div className="flex flex-col sm:flex-row gap-4 w-full">
+          <label className="block text-[12px] flex-1">
             <span className="block mb-1">
               First Name <span className="text-red-500">*</span>
             </span>
@@ -112,11 +97,12 @@ export default function RegisterForm() {
               onChange={handleChange}
               required
               placeholder="First Name"
-              className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+              className="w-full h-[47px] px-3 border rounded-md focus:ring-2 
+                         focus:ring-blue-500"
             />
           </label>
 
-          <label className="block text-[12px] w-[155px]">
+          <label className="block text-[12px] flex-1">
             <span className="block mb-1">
               Last Name <span className="text-red-500">*</span>
             </span>
@@ -127,12 +113,14 @@ export default function RegisterForm() {
               onChange={handleChange}
               required
               placeholder="Last Name"
-              className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+              className="w-full h-[47px] px-3 border rounded-md focus:ring-2 
+                         focus:ring-blue-500"
             />
           </label>
         </div>
 
-        <label className="block text-[12px]">
+        {/* Email */}
+        <label className="block text-[12px] w-full">
           <span className="block mb-1">
             Email Address <span className="text-red-500">*</span>
           </span>
@@ -143,11 +131,13 @@ export default function RegisterForm() {
             onChange={handleChange}
             required
             placeholder="Email"
-            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 
+                       focus:ring-blue-500"
           />
         </label>
 
-        <label className="block text-[12px]">
+        {/* Phone */}
+        <label className="block text-[12px] w-full">
           <span className="block mb-1">
             Phone Number <span className="text-red-500">*</span>
           </span>
@@ -158,28 +148,30 @@ export default function RegisterForm() {
             onChange={handleChange}
             required
             placeholder="Phone Number"
-            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 
+                       focus:ring-blue-500"
           />
         </label>
 
-        <div className="relative w-full">
-          <label htmlFor="moveInDate" className="block text-[12px]">
-            <span className="block mb-1">
-              Move-in Date <span className="text-red-500">*</span>
-            </span>
-            <input
-              id="moveInDate"
-              type="date"
-              name="moveInDate"
-              value={formData.moveInDate}
-              onChange={handleChange}
-              required
-              className="w-full h-[47px] px-3 pr-10 border rounded-md focus:ring-2 focus:ring-blue-500"
-            />
-          </label>
-        </div>
+        {/* Move-in Date */}
+        <label htmlFor="moveInDate" className="block text-[12px] w-full">
+          <span className="block mb-1">
+            Move-in Date <span className="text-red-500">*</span>
+          </span>
+          <input
+            id="moveInDate"
+            type="date"
+            name="moveInDate"
+            value={formData.moveInDate}
+            onChange={handleChange}
+            required
+            className="w-full h-[47px] px-3 pr-10 border rounded-md focus:ring-2 
+                       focus:ring-blue-500"
+          />
+        </label>
 
-        <label className="block text-[12px]">
+        {/* Address */}
+        <label className="block text-[12px] w-full">
           <span className="block mb-1">
             Address <span className="text-red-500">*</span>
           </span>
@@ -190,7 +182,8 @@ export default function RegisterForm() {
             onChange={handleChange}
             required
             placeholder="Address"
-            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 
+                       focus:ring-blue-500"
           />
         </label>
 
@@ -202,7 +195,7 @@ export default function RegisterForm() {
 
         {formData.userType === "Business Owner" && (
           <>
-            <label className="block text-[12px]">
+            <label className="block text-[12px] w-full">
               <span className="block mb-1">
                 Business Name <span className="text-red-500">*</span>
               </span>
@@ -213,7 +206,8 @@ export default function RegisterForm() {
                 onChange={handleChange}
                 required
                 placeholder="Business Name"
-                className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+                className="w-full h-[47px] px-3 border rounded-md focus:ring-2 
+                           focus:ring-blue-500"
               />
             </label>
 
@@ -226,7 +220,8 @@ export default function RegisterForm() {
           </>
         )}
 
-        <label className="block text-[12px] relative">
+        {/* Password */}
+        <label className="block text-[12px] relative w-full">
           <span className="block mb-1">
             Set password <span className="text-red-500">*</span>
           </span>
@@ -237,7 +232,8 @@ export default function RegisterForm() {
             onChange={handleChange}
             required
             placeholder="Set Password"
-            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 
+                       focus:ring-blue-500"
           />
           <button
             type="button"
@@ -248,14 +244,14 @@ export default function RegisterForm() {
           </button>
         </label>
 
-        {/* ✅ Update button updates the profile */}
+        {/* Update Button */}
         <UpdateButton
           label={loading ? "Updating..." : "Update"}
           disabled={loading}
         />
 
         {successMsg && (
-          <p className="text-green-600 text-center mt-2 w-[327px] font-medium">
+          <p className="text-green-600 text-center mt-2 w-full font-medium">
             {successMsg}
           </p>
         )}

@@ -53,9 +53,15 @@ export default function CodeDetails() {
   const whatsappText = `Hello, your access code is ${code}. Valid from ${visitorData.validFrom} to ${visitorData.validUntil}. Powered by http://Locsec.africa`;
 
   return (
-    <section className="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-extrabold text-[#1A1C1E]">{code}</h2>
+    <section
+      className="bg-white rounded-lg shadow-md p-4 sm:p-6 w-full max-w-[375px] sm:max-w-md mx-auto 
+                 overflow-hidden break-words"
+    >
+      {/* Code + Copy */}
+      <div className="flex justify-between items-center flex-wrap gap-2">
+        <h2 className="text-xl sm:text-2xl font-extrabold text-[#1A1C1E] break-all">
+          {code}
+        </h2>
         <button
           onClick={handleCopy}
           className="flex items-center text-sm text-[#375DFB] hover:underline"
@@ -65,51 +71,47 @@ export default function CodeDetails() {
         </button>
       </div>
 
+      {/* Visitor Details */}
       <div className="mt-4 text-sm text-gray-700 space-y-1">
-        <p className="flex justify-between">
+        <p className="flex justify-between flex-wrap">
           <strong>Visitor Type:</strong>
-          <p>{visitorData.visitorType} ({visitorData.visitorsCount})</p>
+          <span>{visitorData.visitorType} ({visitorData.visitorsCount})</span>
         </p>
-        <p className="flex justify-between">
+        <p className="flex justify-between flex-wrap">
           <strong>Visitor Name:</strong>
-          <p>{visitorData.visitorName}</p>
+          <span>{visitorData.visitorName}</span>
         </p>
-        <p className="flex justify-between">
+        <p className="flex justify-between flex-wrap">
           <strong>Plate Number:</strong>
-          <p>{visitorData.plateNumber}</p>
+          <span>{visitorData.plateNumber}</span>
         </p>
-        <p className="flex justify-between">
+        <p className="flex justify-between flex-wrap">
           <strong>Valid From:</strong>
-          <p>{visitorData.validFrom}</p>
+          <span>{visitorData.validFrom}</span>
         </p>
-        <p className="flex justify-between">
+        <p className="flex justify-between flex-wrap">
           <strong>Until:</strong>
-          <p>{visitorData.validUntil}</p>
+          <span>{visitorData.validUntil}</span>
         </p>
-        <p className="flex justify-between">
+        <p className="flex justify-between flex-wrap">
           <strong>Address:</strong>
-          <p>{visitorData.address}</p>
+          <span className="max-w-[200px] text-right break-words">
+            {visitorData.address}
+          </span>
         </p>
       </div>
 
-      {/* WhatsApp share button */}
+      {/* WhatsApp Button */}
       <div className="mt-6">
-        {/* WhatsApp share button */}
-        <div className="mt-6">
-          <WhatsAppButton
-            targetRef={cardRef}
-            code={code}
-            validFrom={visitorData.validFrom}
-            validUntil={visitorData.validUntil}
-          />
-        </div>
-
-
-
-
+        <WhatsAppButton
+          targetRef={cardRef}
+          code={code}
+          validFrom={visitorData.validFrom}
+          validUntil={visitorData.validUntil}
+        />
       </div>
 
-      {/* Hidden/visible card */}
+      {/* Visitor Code Card (shareable image) */}
       <div className="mt-6" ref={cardRef}>
         <VisitorCodeCard
           code={code}
@@ -123,7 +125,7 @@ export default function CodeDetails() {
         />
       </div>
 
-      {/* Copyable message text */}
+      {/* Copyable WhatsApp message */}
       <div className="mt-4 border-t pt-3">
         <p className="text-xs text-gray-600">Message (copyable):</p>
         <textarea

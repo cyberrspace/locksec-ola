@@ -6,7 +6,6 @@ import AccessButton from "./AccessButton";
 import AccessCard from "./AccessCard";
 import { ChevronDown } from "lucide-react";
 
-
 export default function AccessForm() {
   const router = useRouter();
 
@@ -55,16 +54,17 @@ export default function AccessForm() {
   };
 
   return (
-    <div className="flex items-start justify-center px-4 py-4 mt-4">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-[327px]">
-        
-
-        {/* Visitor Type Dropdown (pushes down items below) */}
+    <div className="flex items-start justify-center px-4 sm:px-6 md:px-8 py-6 w-full">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-4 w-full max-w-sm sm:max-w-md"
+      >
+        {/* Visitor Type Dropdown */}
         <AccessCard onSelect={(val) => handleChange("visitorType", val)} />
 
         {/* First & Last Name */}
-        <div className="flex gap-4 w-full">
-          <label className="block text-[12px] w-[155px]">
+        <div className="flex flex-col sm:flex-row gap-4 w-full">
+          <label className="block text-[12px] flex-1">
             <span className="block mb-1">
               First Name <span className="text-red-500">*</span>
             </span>
@@ -79,7 +79,7 @@ export default function AccessForm() {
             />
           </label>
 
-          <label className="block text-[12px] w-[155px]">
+          <label className="block text-[12px] flex-1">
             <span className="block mb-1">
               Last Name <span className="text-red-500">*</span>
             </span>
@@ -127,7 +127,7 @@ export default function AccessForm() {
           />
         </label>
 
-        {/* Coming Vehicles */}
+        {/* Coming Vehicles Dropdown */}
         <div className="block text-[12px]">
           <span className="block mb-1">
             Coming Vehicles <span className="text-red-500">*</span>
@@ -142,16 +142,18 @@ export default function AccessForm() {
               className="w-full h-[47px] px-3 pr-10 border rounded-md text-left 
                          flex justify-between items-center focus:ring-2 focus:ring-blue-500 bg-white"
             >
-              <span>{formData.vehicles ? formData.vehicles : "Select"}</span>
+              <span>{formData.vehicles || "Select"}</span>
               <ChevronDown
                 className={`w-4 h-4 text-gray-500 transition-transform ${openDropdown === "vehicles" ? "rotate-180" : ""
                   }`}
               />
             </button>
 
-            {/* Dropdown pushes down below items */}
+            {/* Dropdown menu */}
             <div
-              className={`transition-all duration-300 overflow-hidden ${openDropdown === "vehicles" ? "max-h-32 mt-2 opacity-100" : "max-h-0 opacity-0"
+              className={`transition-all duration-300 overflow-hidden ${openDropdown === "vehicles"
+                  ? "max-h-32 mt-2 opacity-100"
+                  : "max-h-0 opacity-0"
                 }`}
             >
               {openDropdown === "vehicles" && (
@@ -174,7 +176,7 @@ export default function AccessForm() {
           </div>
         </div>
 
-        {/* Plate Number (shows only if "Yes") */}
+        {/* Plate Number (only if Yes) */}
         {formData.vehicles === "Yes" && (
           <label className="block text-[12px]">
             <span className="block mb-1">
@@ -201,7 +203,7 @@ export default function AccessForm() {
 
         {/* Success message */}
         {successMsg && (
-          <p className="text-green-600 text-center mt-2 w-[327px] font-medium">
+          <p className="text-green-600 text-center mt-2 font-medium">
             {successMsg}
           </p>
         )}
