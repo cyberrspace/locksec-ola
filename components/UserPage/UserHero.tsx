@@ -48,9 +48,9 @@ export default function UserHero() {
 
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") {
-      console.log("✅ User accepted the install prompt");
+      console.log("User accepted the install prompt");
     } else {
-      console.log("❌ User dismissed the install prompt");
+      console.log(" User dismissed the install prompt");
     }
 
     setDeferredPrompt(null);
@@ -86,7 +86,7 @@ export default function UserHero() {
                        rounded-full bg-blue-600
                        hover:bg-blue-700 cursor-pointer transition"
           >
-            <Download className="text-white w-[20px] h-[20px]" />
+            <Download className="text-white w-[20px] h-[20px]"/>
           </button>
         </div>
 
