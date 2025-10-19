@@ -29,13 +29,13 @@ export default function UserBody() {
       </section>
 
       {/* Generate Code + Estate Bills */}
-      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+      <section className="flex flex-row sm:flex-row items-center justify-between gap-4 sm:gap-6">
         <GenerateCode />
         <EstateBills />
       </section>
 
       {/* History + Profile */}
-      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+      <section className="flex flex-row sm:flex-row items-center justify-between gap-4 sm:gap-6">
         <HistoryCard />
         <ProfileCard />
       </section>
