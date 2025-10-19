@@ -1,17 +1,19 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Pencil } from "lucide-react"; // npm install lucide-react
+import { Pencil } from "lucide-react";
 import BackArrow from "../RegisterPage/LoginBack";
 
 export default function ProfileHero() {
   const router = useRouter();
 
   return (
-    <section className="h-[219px] bg-[#0D0D1B] w-[375px] flex flex-col justify-center px-4 space-y-10">
+    <section
+      className="h-[219px] bg-[#0D0D1B] w-full max-w-md md:max-w-lg flex flex-col justify-center px-4 sm:px-6 md:px-8 space-y-10 mx-auto"
+    >
       {/* Top Row: BackArrow + Edit Icon */}
       <div className="flex justify-between items-center">
-        <BackArrow />
+        <BackArrow to="/user" />
         <button
           onClick={() => router.push("/edit")}
           className="text-white hover:text-gray-300 transition-colors"
@@ -22,7 +24,7 @@ export default function ProfileHero() {
       </div>
 
       {/* Title */}
-      <div className="text-[#FFFFFF] font-bold text-[32px] leading-tight">
+      <div className="text-white font-bold text-[28px] sm:text-[32px] leading-tight">
         <p>Profile</p>
         <p>Settings</p>
       </div>

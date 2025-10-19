@@ -6,36 +6,39 @@ import EstateBills from "./EstateBills";
 import HistoryCard from "./HistoryCard";
 import ProfileCard from "./ProfileCard";
 
-
-export default function UserBody(){
-  return(
-    <main className="  min-h-screen  px-4 py-6 space-y-6">
-    <section className=" items-center  rounded-[15.38px] opacity-100
-     w-[345px]  h-[163px] bg-[#313F57] space-y-12 p-4 "
-        >
-        <div className="flex flex-row  justify-between gap-6 text-[14px] font-medium text-[#92B2F2]" >
-          <div> <p >Active code</p></div>
-          <div> <p>Amount Due</p></div>
-         
+export default function UserBody() {
+  return (
+    <main className="min-h-screen w-full px-4 sm:px-6 md:px-10 py-6 space-y-6">
+      {/* Active Code Section */}
+      <section
+        className="flex flex-col justify-between rounded-[15.38px] opacity-100
+        w-full max-w-[500px] mx-auto h-auto bg-[#313F57] p-4 sm:p-6 space-y-6"
+      >
+        {/* Header Row */}
+        <div className="flex justify-between text-[13px] sm:text-[14px] font-medium text-[#92B2F2]">
+          <p>Active code</p>
+          <p>Amount Due</p>
         </div>
-        <div className="flex text-[42.77px] font-bold text-[#92B2F2] justify-between items-center">
-          <p>0</p>
-         <UserLine/>
-          <p>₦28,000</p>
+
+        {/* Value Row */}
+        <div className="flex justify-between items-center text-[#92B2F2]">
+          <p className="text-[36px] sm:text-[42px] font-bold">0</p>
+          <UserLine />
+          <p className="text-[28px] sm:text-[36px] font-bold">₦28,000</p>
         </div>
       </section>
 
-      <section className="flex items-center justify-between ">
-         <GenerateCode/>
-         <EstateBills/>
-        
+      {/* Generate Code + Estate Bills */}
+      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+        <GenerateCode />
+        <EstateBills />
       </section>
 
-      <section className="flex items-center justify-between ">
-      <HistoryCard/>
-      <ProfileCard/>
+      {/* History + Profile */}
+      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+        <HistoryCard />
+        <ProfileCard />
       </section>
-      
     </main>
-  )
+  );
 }

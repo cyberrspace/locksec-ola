@@ -9,19 +9,24 @@ export default function HistoryCard() {
   return (
     <button
       type="button"
-      onClick={() => router.push("/history")} 
-      className="bg-[#334B52] h-[163px] w-[163px] rounded-[15.38px] p-4 space-y-12
+      onClick={() => router.push("/history")}
+      className="bg-[#334B52] h-[163px] w-[163px] sm:h-[163px] sm:w-[163px]
+                 xs:h-[140px] xs:w-[140px]
+                 rounded-[15.38px] p-4 space-y-12
                  flex flex-col justify-between
                  cursor-pointer transition-transform duration-200
-                 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#91C799]"
+                 hover:scale-105 active:scale-95
+                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#91C799]"
     >
       <Image
         src="/icons/history-bg.png"
         alt="History"
         width={23}
         height={23}
+        className="object-contain"
       />
-      <div className="text-[#91C799] text-[16px] font-medium flex-1 flex items-end">
+
+      <div className="text-[#91C799] text-[16px] font-medium flex-1 flex items-end leading-tight">
         <p>History</p>
       </div>
     </button>

@@ -20,7 +20,7 @@ export default function SubmitButton({
       type="submit"
       onClick={onClick}
       disabled={disabled}
-      className={`w-[327px] h-[46px] bg-blue-600 text-white rounded-md hover:bg-blue-700 mt-4 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      className={`w-full max-w-[327px] h-[46px] bg-blue-600 text-white rounded-md hover:bg-blue-700 mt-4 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
     >
       {label}
     </button>

@@ -19,7 +19,6 @@ export default function PaymentDetails() {
   const totalAmt = monthsAmt + serviceCharge;
 
   // Load Paystack script when component mounts
-  
   useEffect(() => {
     if (!document.querySelector('script[src="https://js.paystack.co/v1/inline.js"]')) {
       const script = document.createElement("script");
@@ -28,7 +27,6 @@ export default function PaymentDetails() {
       document.body.appendChild(script);
     }
   }, []);
-
 
   // Payment Handler
   const handlePayment = () => {
@@ -69,34 +67,33 @@ export default function PaymentDetails() {
     handler.openIframe();
   };
 
-
   return (
-    <section className="min-h-screen bg-[#FFFFFF] flex flex-col justify-between px-4 py-10">
-      <div className="space-y-6">
+    <section className="min-h-screen bg-[#FFFFFF] flex flex-col justify-between px-4 sm:px-6 md:px-8 py-8 sm:py-10">
+      <div className="space-y-6 max-w-md mx-auto w-full">
         <div className="space-y-2">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center text-sm sm:text-base">
             <p className="text-[#6C7278]">Type of Bill</p>
             <p className="text-[#1A1C1E]">{bills || "N/A"}</p>
           </div>
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center text-sm sm:text-base">
             <p className="text-[#6C7278]">Apartment</p>
             <p className="text-[#1A1C1E]">{apartment || "N/A"}</p>
           </div>
         </div>
 
         <div className="space-y-2">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center text-sm sm:text-base">
             <p className="text-[#6C7278]">No. of Month(s)</p>
             <p className="text-[#1A1C1E]">{months || "N/A"}</p>
           </div>
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center text-sm sm:text-base">
             <p className="text-[#6C7278]">{months} Months Amt.</p>
             <p className="text-[#1A1C1E]">₦{monthsAmt.toLocaleString()}</p>
           </div>
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center text-sm sm:text-base">
             <p className="text-[#6C7278]">Service Charge</p>
             <p className="text-[#1A1C1E]">₦{serviceCharge.toLocaleString()}</p>
           </div>
@@ -104,27 +101,29 @@ export default function PaymentDetails() {
 
         <PayLine />
 
-        <div className="flex justify-between items-center mt-10">
+        <div className="flex justify-between items-center mt-10 text-sm sm:text-base">
           <p className="text-[#6C7278]">Total Amt.</p>
           <p className="text-[#1A1C1E] font-semibold">
             ₦{totalAmt.toLocaleString()}
           </p>
         </div>
 
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+        {error && (
+          <p className="text-red-500 text-sm text-center break-words px-2">{error}</p>
+        )}
       </div>
 
       {/* ✅ Payment Button */}
-      <div className="mt-10 flex flex-col items-center">
+      <div className="mt-10 flex flex-col items-center w-full max-w-md mx-auto">
         <button
           onClick={handlePayment}
-          className="bg-blue-600 text-white rounded-md w-[327px] h-[46px] hover:bg-blue-700"
+          className="bg-blue-600 text-white rounded-md w-full sm:w-[327px] h-[46px] hover:bg-blue-700 transition-colors text-sm sm:text-base"
         >
           Complete Payment
         </button>
 
         <div className="flex justify-center mt-4">
-          <div className="w-[148px] h-[3px] bg-[#000000]" />
+          <div className="w-[100px] sm:w-[148px] h-[3px] bg-[#000000]" />
         </div>
       </div>
     </section>

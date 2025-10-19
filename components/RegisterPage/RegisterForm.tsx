@@ -1,16 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import RadioButton from "./RadioButton";
-import RegisterButton from "./RegisterButton";
 import IndustrySelect from "./IndusrtrySelect";
-
 
 export default function RegisterForm() {
   const router = useRouter();
-
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -28,6 +25,17 @@ export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+
+  useEffect(() => {
+    const storedData = localStorage.getItem("userData");
+    if (storedData) {
+      const parsed = JSON.parse(storedData);
+      setFormData((prev) => ({
+        ...prev,
+        ...parsed,
+      }));
+    }
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -49,35 +57,43 @@ export default function RegisterForm() {
         savedLastName = `${savedLastName}-${code}`;
       }
 
-      const userPayload = {
-        firstName: formData.firstName.trim(), // ✅ save firstName
+      const updatedUser = {
+        firstName: formData.firstName.trim(),
         lastName: savedLastName,
-        address: formData.address.trim(),     // ✅ save address
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        moveInDate: formData.moveInDate,
+        address: formData.address.trim(),
+        password: formData.password.trim(),
+        userType: formData.userType,
+        businessName: formData.businessName.trim(),
+        industry: formData.industry.trim(),
       };
 
-      localStorage.setItem("userData", JSON.stringify(userPayload));
+      localStorage.setItem("userData", JSON.stringify(updatedUser));
 
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      setSuccessMsg("Registration successful!");
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setSuccessMsg("Profile updated successfully!");
 
       setTimeout(() => {
         router.push("/user");
       }, 1500);
     } catch (err) {
-      console.error("Error:", err);
+      console.error("Error updating profile:", err);
     } finally {
       setLoading(false);
     }
   };
 
-
   return (
     <div className="flex items-center min-h-screen justify-center px-4 py-6">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-[327px]">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-4 w-full max-w-[380px] sm:max-w-[420px]"
+      >
         {/* First & Last Name */}
-        <div className="flex gap-4 w-full">
-          <label className="block text-[12px] w-[155px]">
+        <div className="flex flex-col sm:flex-row gap-4 w-full">
+          <label className="block text-[12px] w-full sm:w-1/2">
             <span className="block mb-1">
               First Name <span className="text-red-500">*</span>
             </span>
@@ -92,7 +108,7 @@ export default function RegisterForm() {
             />
           </label>
 
-          <label className="block text-[12px] w-[155px]">
+          <label className="block text-[12px] w-full sm:w-1/2">
             <span className="block mb-1">
               Last Name <span className="text-red-500">*</span>
             </span>
@@ -170,7 +186,6 @@ export default function RegisterForm() {
           />
         </label>
 
-        {/*  Radio Buttons */}
         <RadioButton
           value={formData.userType}
           onChange={(value) => setFormData((p) => ({ ...p, userType: value }))}
@@ -195,7 +210,9 @@ export default function RegisterForm() {
 
             <IndustrySelect
               value={formData.industry}
-              onChange={(val: string) => setFormData((p) => ({ ...p, industry: val }))}
+              onChange={(val: string) =>
+                setFormData((p) => ({ ...p, industry: val }))
+              }
             />
           </>
         )}
@@ -222,18 +239,20 @@ export default function RegisterForm() {
           </button>
         </label>
 
-        <RegisterButton
-          label={loading ? "Registering..." : "Register"}
+        <button
+          type="submit"
           disabled={loading}
-        />
+          className="w-full h-[47px] bg-blue-600 text-white rounded-md font-medium disabled:opacity-50"
+        >
+          {loading ? "Updating..." : "Update"}
+        </button>
 
         {successMsg && (
-          <p className="text-green-600 text-center mt-2 w-[327px] font-medium">
+          <p className="text-green-600 text-center mt-2 font-medium text-sm sm:text-base">
             {successMsg}
           </p>
         )}
       </form>
-    
     </div>
   );
 }
