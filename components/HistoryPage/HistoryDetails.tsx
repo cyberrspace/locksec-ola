@@ -19,6 +19,7 @@ export default function HistoryDetails() {
   }
   const [paymentData, setPaymentData] = useState<PaymentDataItem[]>([]);
 
+  // Simulate fetching data
   useEffect(() => {
     setAccessData([
       { name: "Lois", type: "Guest", code: 7828803 },
@@ -34,7 +35,8 @@ export default function HistoryDetails() {
   }, []);
 
   return (
-    <section className="min-h-screen text-[#1A1C1E] px-4 py-10 flex flex-col items-center">
+
+    <section className="min-h-screen text-[#1A1C1E] px-4 py-10 flex flex-col justify-between   items-center">
       <div className="w-full flex flex-col items-center">
         {/* Tabs */}
         <div className="flex justify-center gap-4 mb-8">
@@ -61,7 +63,7 @@ export default function HistoryDetails() {
         {/* Access Table */}
         {activeTab === "access" && (
           <div className="w-full max-w-md space-y-4">
-            <div className="hidden sm:flex justify-between font-semibold border-b border-gray-300 pb-2">
+            <div className="flex justify-between font-semibold border-b border-gray-300 pb-2">
               <p>Name</p>
               <p>Type</p>
               <p>Code</p>
@@ -70,13 +72,10 @@ export default function HistoryDetails() {
             {accessData.map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col sm:flex-row sm:justify-between border-b border-gray-200 py-2 text-sm"
+                className="flex justify-between border-b border-gray-200 py-2 text-sm"
               >
-                <p className="sm:hidden font-semibold">Name:</p>
                 <p>{item.name}</p>
-                <p className="sm:hidden font-semibold">Type:</p>
                 <p>{item.type}</p>
-                <p className="sm:hidden font-semibold">Code:</p>
                 <p>{item.code}</p>
               </div>
             ))}
@@ -86,7 +85,7 @@ export default function HistoryDetails() {
         {/* Payment Table */}
         {activeTab === "payment" && (
           <div className="w-full max-w-md space-y-4">
-            <div className="hidden sm:flex justify-between font-semibold border-b border-gray-300 pb-2">
+            <div className="flex justify-between font-semibold border-b border-gray-300 pb-2">
               <p>Reference</p>
               <p>Date</p>
               <p>Amount</p>
@@ -96,24 +95,17 @@ export default function HistoryDetails() {
             {paymentData.map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col sm:flex-row sm:justify-between border-b border-gray-200 py-2 text-sm"
+                className="flex justify-between border-b border-gray-200 py-2 text-sm"
               >
-                <div className="sm:hidden font-semibold">Reference:</div>
                 <p>{item.ref}</p>
-
-                <div className="sm:hidden font-semibold">Date:</div>
                 <p>{item.date}</p>
-
-                <div className="sm:hidden font-semibold">Amount:</div>
                 <p>{item.amount}</p>
-
-                <div className="sm:hidden font-semibold">Months:</div>
                 <p>{item.months}</p>
               </div>
             ))}
           </div>
         )}
       </div>
-    </section>
+       </section>
   );
 }

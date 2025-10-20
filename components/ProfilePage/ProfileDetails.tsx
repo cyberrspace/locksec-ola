@@ -27,10 +27,7 @@ export default function ProfileDetails() {
         ))}
       </div>
 
-      {/* Bottom line (centered decoration) */}
-      <div className="flex justify-center mt-20 mb-4">
-        <div className="w-[148px] h-[5px] bg-[#000000] rounded-full" />
-      </div>
+      
     </section>
   );
 }
