@@ -46,7 +46,7 @@ export default function EstatePaymentForm() {
       <form
         onSubmit={handleSubmit}
         className="bg-white w-full max-w-[400px] sm:max-w-[450px] md:max-w-[500px]
-                   p-4 sm:p-6 flex flex-col gap-4 rounded-lg "
+                   p-4 sm:p-6 flex flex-col gap-4 rounded-lg"
       >
         {/* Estate Bill Selection */}
         <div className="relative w-full">
