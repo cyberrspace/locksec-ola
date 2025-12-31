@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Eye, EyeOff } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 import RadioButton from "./RadioButton";
 import IndustrySelect from "./IndusrtrySelect";
@@ -23,20 +23,41 @@ export default function RegisterForm() {
     industry: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
+  
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
   useEffect(() => {
-    const storedData = localStorage.getItem("userData");
-    if (storedData) {
-      const parsed = JSON.parse(storedData);
-      setFormData((prev) => ({
-        ...prev,
-        ...parsed,
-      }));
-    }
+    const fetchProfile = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const res = await fetch("/users/user-profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const result = await res.json();
+
+      setFormData({
+        firstName: result.data.firstName,
+        lastName: result.data.lastName,
+        email: result.data.email,
+        phone: result.data.phoneNumber || "",
+        address: result.data.address || "",
+        moveInDate: "",
+        password: "",
+        userType:
+          result.data.role === "businessOwner"
+            ? "Business Owner"
+            : "Resident",
+        businessName: result.data.businessName || "",
+        industry: result.data.industryType || "",
+      });
+    };
+
+    fetchProfile();
   }, []);
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -50,32 +71,41 @@ export default function RegisterForm() {
     setSuccessMsg("");
 
     try {
-      let savedLastName = formData.lastName.trim();
-      let code = "";
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Not authenticated");
 
-      if (formData.userType === "Business Owner") {
-        code = Math.floor(100000 + Math.random() * 900000).toString();
-        savedLastName = `${savedLastName}-${code}`;
-      }
-
-      const updatedUser = {
-        ...formData,
-        lastName: savedLastName,
+      const payload = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phoneNumber: formData.phone,
+        address: formData.address,
+        ...(formData.userType === "Business Owner" && {
+          businessName: formData.businessName,
+          industryType: formData.industry,
+        }),
       };
 
-      localStorage.setItem("userData", JSON.stringify(updatedUser));
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const res = await fetch("/users/update-profile", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("Update failed");
+
       setSuccessMsg("Profile updated successfully!");
 
-      setTimeout(() => {
-        router.push("/user");
-      }, 1500);
+      setTimeout(() => router.push("/profile"), 1500);
     } catch (err) {
-      console.error("Error updating profile:", err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="flex items-center min-h-screen justify-center bg-white">
@@ -220,30 +250,7 @@ export default function RegisterForm() {
           </>
         )}
 
-        {/* Password */}
-        <label className="block text-[12px] relative w-full">
-          <span className="block mb-1">
-            Set password <span className="text-red-500">*</span>
-          </span>
-          <input
-            type={showPassword ? "text" : "password"}
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            placeholder="Set Password"
-            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 
-                       focus:ring-blue-500"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute right-3 top-9 text-gray-500"
-          >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-        </label>
-
+       
         {/* Update Button */}
         <UpdateButton
           label={loading ? "Updating..." : "Update"}

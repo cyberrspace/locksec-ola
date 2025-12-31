@@ -8,11 +8,11 @@ export default function EstatePaymentForm() {
 
   const [selectedBills, setSelectedBills] = useState<string[]>([]);
   const [months, setMonths] = useState("1");
-  const [amount, setAmount] = useState(28000); // default for 1 month
+  const [amount, setAmount] = useState(28000); 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [apartment, setApartment] = useState("Apt 12B Road M");
 
-  const monthlyRate = 28000; // fixed monthly subscription
+  const monthlyRate = 28000; 
 
   const handleCheckboxChange = (bill: string) => {
     setSelectedBills((prev) =>

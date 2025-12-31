@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { MapPin, Download } from "lucide-react";
+import { getUserProfile } from "@/services/user";
+
 
 // Define the BeforeInstallPromptEvent type
 interface BeforeInstallPromptEvent extends Event {
@@ -11,32 +13,60 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 interface UserData {
+  firstName: string;
   lastName: string;
-  address: string;
+  address?: string;
+  role: "admin" | "resident" | "businessOwner";
 }
+
 
 export default function UserHero() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("userData");
-    if (stored) {
-      setUserData(JSON.parse(stored));
+    // --- 1. Load user from localStorage ---
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUserData(JSON.parse(storedUser));
+      } catch (err) {
+        console.error("Failed to parse user from localStorage", err);
+      }
     }
 
-    // Listen for beforeinstallprompt
-    const handler = (e: Event) => {
+    // --- 2. Fetch latest user profile from API ---
+    async function fetchUser() {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const res = await getUserProfile(); // calls /users/user-profile
+        setUserData(res.data);
+
+        // Optionally update localStorage so cache stays fresh
+        localStorage.setItem("user", JSON.stringify(res.data));
+      } catch (err) {
+        console.error("Failed to fetch user profile", err);
+      }
+    }
+
+    fetchUser();
+
+    // --- 3. PWA beforeinstallprompt listener ---
+    const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
-    window.addEventListener("beforeinstallprompt", handler);
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
+    // Cleanup on unmount
     return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     };
   }, []);
+
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
@@ -73,8 +103,9 @@ export default function UserHero() {
             <div>
               <p className="text-[#808493] text-[11.19px]">Address</p>
               <p className="text-[#FFFFFF] text-[14.92px] font-bold">
-                {userData?.address || "No address saved"}
+                {userData?.address ?? "No address available"}
               </p>
+               
             </div>
           </div>
 
@@ -93,7 +124,7 @@ export default function UserHero() {
         {/* Greeting */}
         <div className="pt-4">
           <p className="text-[#FFFFFF] font-bold text-[20.51px]">
-            Hello, {userData?.lastName || "User"}.
+            Hello, {userData?.lastName || "user"}.
           </p>
         </div>
       </section>

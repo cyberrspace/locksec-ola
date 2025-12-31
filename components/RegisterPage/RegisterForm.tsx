@@ -1,10 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import RadioButton from "./RadioButton";
 import IndustrySelect from "./IndusrtrySelect";
+
+// src/components/RegisterForm.tsx
+import { registerUser, RegisterPayload } from "@/services/auth";
+import { getAxiosErrorMessage } from "@/lib/getAxiosError";
+
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -13,29 +18,20 @@ export default function RegisterForm() {
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
     moveInDate: "",
     address: "",
     password: "",
-    userType: "Resident",
+    userType: "",
     businessName: "",
-    industry: "",
+    industryType: "",
+    estateId: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-
-  useEffect(() => {
-    const storedData = localStorage.getItem("userData");
-    if (storedData) {
-      const parsed = JSON.parse(storedData);
-      setFormData((prev) => ({
-        ...prev,
-        ...parsed,
-      }));
-    }
-  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -46,43 +42,46 @@ export default function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMsg("");
     setSuccessMsg("");
 
     try {
-      let savedLastName = formData.lastName.trim();
-      let code = "";
-
+      // Trim last name and add code if business owner
+      let lastName = formData.lastName.trim();
       if (formData.userType === "Business Owner") {
-        code = Math.floor(100000 + Math.random() * 900000).toString();
-        savedLastName = `${savedLastName}-${code}`;
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        lastName = `${lastName}-${code}`;
       }
 
-      const updatedUser = {
-        firstName: formData.firstName.trim(),
-        lastName: savedLastName,
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
-        moveInDate: formData.moveInDate,
-        address: formData.address.trim(),
-        password: formData.password.trim(),
-        userType: formData.userType,
-        businessName: formData.businessName.trim(),
-        industry: formData.industry.trim(),
+      // Build payload to match backend requirements
+      const payload: RegisterPayload & { estateId: string } = {
+        firstName: formData.firstName,
+        lastName,
+        email: formData.email,
+        address: formData.address,
+        password: formData.password,
+        role: formData.userType === "Business Owner" ? "businessOwner" : "resident",
+        phoneNumber: formData.phoneNumber,
+        moveInDate: new Date(formData.moveInDate).toISOString(), // ✅ ISO format
+        estateId: "69340ee5effdc922c7c156ea", 
+        // Include business fields only if Business Owner
+        ...(formData.userType === "Business Owner" && {
+          businessName: formData.businessName,
+          industryType: formData.industryType,
+        }),
       };
 
-      localStorage.setItem("userData", JSON.stringify(updatedUser));
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setSuccessMsg("Profile updated successfully!");
-
-      setTimeout(() => {
-        router.push("/user");
-      }, 1500);
-    } catch (err) {
-      console.error("Error updating profile:", err);
+      await registerUser(payload);
+      setSuccessMsg("Registration successful! Redirecting...");
+      setTimeout(() => router.push("/Email"), 1500);
+    } catch (err: unknown) {
+      console.error(err);
+      setErrorMsg(getAxiosErrorMessage(err, "Registration failed"));
     } finally {
       setLoading(false);
     }
+
   };
 
   return (
@@ -91,167 +90,160 @@ export default function RegisterForm() {
         onSubmit={handleSubmit}
         className="flex flex-col gap-4 w-full max-w-[380px] sm:max-w-[420px]"
       >
+        {errorMsg && <p className="text-red-500 text-center">{errorMsg}</p>}
+        {successMsg && <p className="text-green-600 text-center">{successMsg}</p>}
+
         {/* First & Last Name */}
         <div className="flex flex-col sm:flex-row gap-4 w-full">
           <label className="block text-[12px] w-full sm:w-1/2">
-            <span className="block mb-1">
-              First Name <span className="text-red-500">*</span>
-            </span>
+            First Name *
             <input
               type="text"
               name="firstName"
               value={formData.firstName}
               onChange={handleChange}
               required
-              placeholder="First Name"
               className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
             />
           </label>
-
           <label className="block text-[12px] w-full sm:w-1/2">
-            <span className="block mb-1">
-              Last Name <span className="text-red-500">*</span>
-            </span>
+            Last Name *
             <input
               type="text"
               name="lastName"
               value={formData.lastName}
               onChange={handleChange}
               required
-              placeholder="Last Name"
               className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
             />
           </label>
         </div>
 
+        {/* Email */}
         <label className="block text-[12px]">
-          <span className="block mb-1">
-            Email Address <span className="text-red-500">*</span>
-          </span>
+          Email Address *
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             required
-            placeholder="Email"
             className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
           />
         </label>
 
+        {/* Phone */}
         <label className="block text-[12px]">
-          <span className="block mb-1">
-            Phone Number <span className="text-red-500">*</span>
-          </span>
+          Phone Number *
           <input
             type="tel"
-            name="phone"
-            value={formData.phone}
+            name="phoneNumber"
+            value={formData.phoneNumber}
             onChange={handleChange}
             required
-            placeholder="Phone Number"
             className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
           />
         </label>
 
-        <div className="relative w-full">
-          <label htmlFor="moveInDate" className="block text-[12px]">
-            <span className="block mb-1">
-              Move-in Date <span className="text-red-500">*</span>
-            </span>
-            <input
-              id="moveInDate"
-              type="date"
-              name="moveInDate"
-              value={formData.moveInDate}
-              onChange={handleChange}
-              required
-              className="w-full h-[47px] px-3 pr-10 border rounded-md focus:ring-2 focus:ring-blue-500"
-            />
-          </label>
-        </div>
+        <label>
+          Estate *
+          <select
+            name="estateId"
+            value={formData.estateId}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select estate</option>
+            <option value="estate_1_id">Lakeshore Estate</option>
+            <option value="estate_2_id">Riverside Estate</option>
+          </select>
+        </label>
 
+
+         {/* Move-in Date */}
         <label className="block text-[12px]">
-          <span className="block mb-1">
-            Address <span className="text-red-500">*</span>
-          </span>
+          Move-in Date *
+          <input
+            type="date"
+            name="moveInDate"
+            value={formData.moveInDate}
+            onChange={handleChange}
+            required
+            className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </label>
+
+        {/* Address */}
+        <label className="block text-[12px]">
+          Address *
           <input
             type="text"
             name="address"
             value={formData.address}
             onChange={handleChange}
             required
-            placeholder="Address"
             className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
           />
         </label>
 
+        {/* User Type */}
         <RadioButton
           value={formData.userType}
-          onChange={(value) => setFormData((p) => ({ ...p, userType: value }))}
+          onChange={(val) => setFormData((p) => ({ ...p, userType: val }))}
         />
 
+        {/* Business Fields */}
         {formData.userType === "Business Owner" && (
           <>
             <label className="block text-[12px]">
-              <span className="block mb-1">
-                Business Name <span className="text-red-500">*</span>
-              </span>
+              Business Name *
               <input
                 type="text"
                 name="businessName"
                 value={formData.businessName}
                 onChange={handleChange}
                 required
-                placeholder="Business Name"
                 className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
               />
             </label>
 
             <IndustrySelect
-              value={formData.industry}
+              value={formData.industryType}
               onChange={(val: string) =>
-                setFormData((p) => ({ ...p, industry: val }))
+                setFormData((p) => ({ ...p, industryType: val }))
               }
             />
           </>
         )}
 
+        {/* Password */}
         <label className="block text-[12px] relative">
-          <span className="block mb-1">
-            Set password <span className="text-red-500">*</span>
-          </span>
+          Set Password *
           <input
             type={showPassword ? "text" : "password"}
             name="password"
             value={formData.password}
             onChange={handleChange}
             required
-            placeholder="Set Password"
             className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
+            onClick={() => setShowPassword((p) => !p)}
             className="absolute right-3 top-9 text-gray-500"
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         </label>
 
+        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
           className="w-full h-[47px] bg-blue-600 text-white rounded-md font-medium disabled:opacity-50"
         >
-          {loading ? "Updating..." : "Update"}
+          {loading ? "Registering..." : "Register"}
         </button>
-
-        {successMsg && (
-          <p className="text-green-600 text-center mt-2 font-medium text-sm sm:text-base">
-            {successMsg}
-          </p>
-        )}
       </form>
     </div>
   );

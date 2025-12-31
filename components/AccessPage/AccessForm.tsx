@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import AccessButton from "./AccessButton";
 import AccessCard from "./AccessCard";
 import { ChevronDown } from "lucide-react";
+import { createAccessCode } from "@/services/accessCodes";
+import axios from "axios";
 
 export default function AccessForm() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    visitorType: "",
+     victorType: "",
     firstName: "",
     lastName: "",
     phone: "",
@@ -26,28 +28,42 @@ export default function AccessForm() {
   const handleChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setSuccessMsg("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const payload = {
+        victorType: formData.victorType || "Guest",
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phoneNumber: formData.phone,
+        numOfPeople: Number(formData.noOfPersons),
+        withVehicle: formData.vehicles === "Yes",
+        plateNum: formData.vehicles === "Yes" ? formData.plate : undefined,
+      };
+
+      // ✅ Create access code via API
+      const result = await createAccessCode(payload);
+
+      // ✅ Save entire response in sessionStorage
+      sessionStorage.setItem(
+        "generatedAccessCode",
+        JSON.stringify(result.data)
+      );
+
       setSuccessMsg("Access code generated successfully!");
 
-      const queryParams = new URLSearchParams({
-        visitorType: formData.visitorType || "Guest",
-        visitorsCount: formData.noOfPersons || "1",
-        plateNumber: formData.plate,
-        name: `${formData.firstName} ${formData.lastName}`,
-      });
-
-      setTimeout(() => {
-        router.push(`/code?${queryParams.toString()}`);
-      }, 1500);
-    } catch (err) {
-      console.error("Error:", err);
+      // ✅ Pass the _id in the URL for Code page
+      router.push(`/code/${result.data._id}`);
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        alert(err.response?.data?.message || "Failed to generate access code");
+      } else {
+        alert("Something went wrong");
+      }
     } finally {
       setLoading(false);
     }
@@ -60,7 +76,8 @@ export default function AccessForm() {
         className="flex flex-col gap-4 w-full max-w-sm sm:max-w-md"
       >
         {/* Visitor Type Dropdown */}
-        <AccessCard onSelect={(val) => handleChange("visitorType", val)} />
+        <AccessCard onSelect={(val) => handleChange("victorType", val)} />
+
 
         {/* First & Last Name */}
         <div className="flex flex-col sm:flex-row gap-4 w-full">

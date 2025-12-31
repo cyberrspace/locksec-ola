@@ -3,7 +3,7 @@
 import ContentWrapper from "@/components/common/ContentWrapper";
 import LoginHero from "@/components/LoginPage/LoginHero";
 import LoginTwo from "@/components/LoginPage/LoginTwo";
-import LoginButton from "@/components/LoginPage/LoginButton";
+
 
 
 export default function LoginPage() {
@@ -18,7 +18,7 @@ export default function LoginPage() {
        
         <section className="flex flex-col items-center justify-center w-full flex-1 gap-6 px-4 sm:px-6 md:px-8 bg-transparent">
           <LoginTwo />
-          <LoginButton />
+         
          
         </section>
       </main>
