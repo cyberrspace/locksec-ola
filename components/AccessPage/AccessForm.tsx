@@ -12,7 +12,7 @@ export default function AccessForm() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-     victorType: "",
+    victorType: "",
     firstName: "",
     lastName: "",
     phone: "",
@@ -28,7 +28,7 @@ export default function AccessForm() {
   const handleChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-   
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -37,18 +37,18 @@ export default function AccessForm() {
     try {
       const payload = {
         victorType: formData.victorType || "Guest",
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phoneNumber: formData.phone,
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        phoneNumber: formData.phone.trim(),
         numOfPeople: Number(formData.noOfPersons),
         withVehicle: formData.vehicles === "Yes",
-        plateNum: formData.vehicles === "Yes" ? formData.plate : undefined,
+        plateNum:
+          formData.vehicles === "Yes" ? formData.plate.trim() : undefined,
       };
 
-      // ✅ Create access code via API
       const result = await createAccessCode(payload);
 
-      // ✅ Save entire response in sessionStorage
+      // ✅ persist for code page
       sessionStorage.setItem(
         "generatedAccessCode",
         JSON.stringify(result.data)
@@ -56,9 +56,8 @@ export default function AccessForm() {
 
       setSuccessMsg("Access code generated successfully!");
 
-      // ✅ Pass the _id in the URL for Code page
       router.push(`/code/${result.data._id}`);
-    } catch (err: unknown) {
+    } catch (err) {
       if (axios.isAxiosError(err)) {
         alert(err.response?.data?.message || "Failed to generate access code");
       } else {
@@ -75,9 +74,7 @@ export default function AccessForm() {
         onSubmit={handleSubmit}
         className="flex flex-col gap-4 w-full max-w-sm sm:max-w-md"
       >
-        {/* Visitor Type Dropdown */}
         <AccessCard onSelect={(val) => handleChange("victorType", val)} />
-
 
         {/* First & Last Name */}
         <div className="flex flex-col sm:flex-row gap-4 w-full">
@@ -169,8 +166,8 @@ export default function AccessForm() {
             {/* Dropdown menu */}
             <div
               className={`transition-all duration-300 overflow-hidden ${openDropdown === "vehicles"
-                  ? "max-h-32 mt-2 opacity-100"
-                  : "max-h-0 opacity-0"
+                ? "max-h-32 mt-2 opacity-100"
+                : "max-h-0 opacity-0"
                 }`}
             >
               {openDropdown === "vehicles" && (
@@ -194,31 +191,32 @@ export default function AccessForm() {
         </div>
 
         {/* Plate Number (only if Yes) */}
-        {formData.vehicles === "Yes" && (
-          <label className="block text-[12px]">
-            <span className="block mb-1">
-              Plate number <span className="text-red-500">*</span>
-            </span>
-            <input
-              type="text"
-              pattern="[A-Za-z0-9]+"
-              name="plate"
-              value={formData.plate}
-              onChange={(e) => handleChange("plate", e.target.value)}
-              required
-              placeholder="Plate Number"
-              className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 font-bold"
-            />
-          </label>
-        )}
+        {
+          formData.vehicles === "Yes" && (
+            <label className="block text-[12px]">
+              <span className="block mb-1">
+                Plate number <span className="text-red-500">*</span>
+              </span>
+              <input
+                type="text"
+                pattern="[A-Za-z0-9]+"
+                name="plate"
+                value={formData.plate}
+                onChange={(e) => handleChange("plate", e.target.value)}
+                required
+                placeholder="Plate Number"
+                className="w-full h-[47px] px-3 border rounded-md focus:ring-2 focus:ring-blue-500 font-bold"
+              />
+            </label>
+          )
+        }
 
-        {/* Submit Button */}
+
         <AccessButton
           label={loading ? "Generating..." : "Generate access code"}
           disabled={loading}
         />
 
-        {/* Success message */}
         {successMsg && (
           <p className="text-green-600 text-center mt-2 font-medium">
             {successMsg}
@@ -228,3 +226,7 @@ export default function AccessForm() {
     </div>
   );
 }
+
+
+// enter
+

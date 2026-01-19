@@ -15,6 +15,7 @@ export interface CreateAccessCodePayload {
 
 export interface AccessCode {
   _id: string;
+  userId: string;
   code: string;
   victorType: string;
   firstName: string;
@@ -28,33 +29,38 @@ export interface AccessCode {
   updatedAt: string;
 }
 
-export interface GetAccessCodeResponse {
+export interface ApiResponse<T> {
   success: boolean;
   status: number;
   message: string;
-  data: AccessCode;
+  data: T;
 }
-
-export interface CreateAccessCodeResponse {
-  success: boolean;
-  status: number;
-  message: string;
-  data: AccessCode;
-}
-
 
 /* ================= API ================= */
 
-export async function createAccessCode(payload: CreateAccessCodePayload) {
-  const res = await axiosInstance.post<CreateAccessCodeResponse>(
-    "/access-codes/",
-    payload
+export async function createAccessCode(
+  payload: CreateAccessCodePayload
+): Promise<ApiResponse<AccessCode>> {
+  const res = await axiosInstance.post<ApiResponse<AccessCode>>(
+    "/access-codes",
+    payload,
+    {
+      withCredentials: true, // ✅ REQUIRED for auth cookies
+    }
   );
+
   return res.data;
 }
 
-export function getAccessCodeById(id: string) {
-  return axiosInstance.get<GetAccessCodeResponse>(
-    `/access-codes/${id}`
+export async function getAccessCodeById(
+  id: string
+): Promise<ApiResponse<AccessCode>> {
+  const res = await axiosInstance.get<ApiResponse<AccessCode>>(
+    `/access-codes/${id}`,
+    {
+      withCredentials: true,
+    }
   );
+
+  return res.data;
 }

@@ -48,28 +48,32 @@ export default function RegisterForm() {
     try {
       // Trim last name and add code if business owner
       let lastName = formData.lastName.trim();
-      if (formData.userType === "Business Owner") {
+      if (formData.userType === "Business Owner"){
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         lastName = `${lastName}-${code}`;
       }
 
       // Build payload to match backend requirements
       const payload: RegisterPayload & { estateId: string } = {
-        firstName: formData.firstName,
+        firstName: formData.firstName.trim(),
         lastName,
-        email: formData.email,
-        address: formData.address,
-        password: formData.password,
-        role: formData.userType === "Business Owner" ? "businessOwner" : "resident",
-        phoneNumber: formData.phoneNumber,
-        moveInDate: new Date(formData.moveInDate).toISOString(), // ✅ ISO format
-        estateId: "69340ee5effdc922c7c156ea", 
-        // Include business fields only if Business Owner
+        email: formData.email.trim().toLowerCase(), // ✅ FIXED
+        address: formData.address.trim(),
+        password: formData.password.trim(), // ✅ FIXED
+        role:
+          formData.userType === "Business Owner"
+            ? "businessOwner"
+            : "resident",
+        phoneNumber: formData.phoneNumber.trim(),
+        moveInDate: new Date(formData.moveInDate).toISOString(),
+        estateId: "69340ee5effdc922c7c156ea",
+
         ...(formData.userType === "Business Owner" && {
-          businessName: formData.businessName,
+          businessName: formData.businessName.trim(),
           industryType: formData.industryType,
         }),
       };
+
 
 
       await registerUser(payload);
@@ -81,6 +85,8 @@ export default function RegisterForm() {
     } finally {
       setLoading(false);
     }
+
+   
 
   };
 

@@ -5,20 +5,12 @@ import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
-// TEMP FIX: Remove broken imports and replace with safe local functions
-async function verifyEstate(data: { email: string; token: string }) {
-  console.log("verifyEstate called with:", data);
-  return Promise.resolve(true);
-}
+import {
+  verifyEmail,
+  resendVerification,
+} from "@/services/auth";
 
-async function resendVerification(email: string) {
-  console.log("resendVerification called for:", email);
-  return Promise.resolve(true);
-}
-
-function getAxiosErrorMessage(_: unknown, fallback: string) {
-  return fallback;
-}
+import { getAxiosErrorMessage } from "@/lib/getAxiosError";
 
 export default function EmailVerificationPage() {
   const router = useRouter();
@@ -31,62 +23,65 @@ export default function EmailVerificationPage() {
   const [timer, setTimer] = useState(30);
   const [email, setEmail] = useState<string>("");
 
-  // Load email from localStorage
+  /* ================= LOAD EMAIL ================= */
   useEffect(() => {
-    const saved = localStorage.getItem("pendingEmail");
-    if (saved) setEmail(saved);
+    const savedEmail = localStorage.getItem("pendingEmail");
+    if (savedEmail) setEmail(savedEmail);
   }, []);
 
-  // Countdown timer
+  /* ================= COUNTDOWN ================= */
   useEffect(() => {
     if (timer > 0) {
-      const interval = setInterval(() => setTimer((t) => t - 1), 1000);
+      const interval = setInterval(() => {
+        setTimer((t) => t - 1);
+      }, 1000);
       return () => clearInterval(interval);
     }
   }, [timer]);
 
-  // Handle 6-digit code input
+  /* ================= INPUT HANDLER ================= */
   const handleChange = (value: string, index: number) => {
-    if (/^\d?$/.test(value)) {
-      const newCode = [...code];
-      newCode[index] = value;
-      setCode(newCode);
-      setError("");
+    if (!/^\d?$/.test(value)) return;
 
-      if (value && index < 5) {
-        document.getElementById(`code-${index + 1}`)?.focus();
-      } else if (!value && index > 0) {
-        document.getElementById(`code-${index - 1}`)?.focus();
-      }
+    const updated = [...code];
+    updated[index] = value;
+    setCode(updated);
+    setError("");
+
+    if (value && index < 5) {
+      document.getElementById(`code-${index + 1}`)?.focus();
+    } else if (!value && index > 0) {
+      document.getElementById(`code-${index - 1}`)?.focus();
     }
   };
 
-  // Verify the code
+  /* ================= VERIFY EMAIL ================= */
   const handleVerify = async () => {
-    const codeEntered = code.join("");
+    const verificationToken = code.join("");
 
-    if (codeEntered.length !== 6) {
+    if (verificationToken.length !== 6) {
       setError("Enter the 6-digit code sent to your email");
-      return;
-    }
-
-    if (!email) {
-      setError("Email missing, please register again.");
       return;
     }
 
     try {
       setLoading(true);
-      await verifyEstate({ email, token: codeEntered });
-      router.push("/");
+
+      await verifyEmail(verificationToken);
+
+      // ✅ verification successful
+      localStorage.removeItem("pendingEmail");
+      router.push("/login");
     } catch (err) {
-      setError(getAxiosErrorMessage(err, "Invalid or expired verification code"));
+      setError(
+        getAxiosErrorMessage(err, "Invalid or expired verification code")
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // Resend verification
+  /* ================= RESEND CODE ================= */
   const handleResend = async () => {
     if (!email) {
       setError("Email not found. Please register again.");
@@ -95,10 +90,15 @@ export default function EmailVerificationPage() {
 
     try {
       setResendLoading(true);
+
       await resendVerification(email);
+
       setTimer(30);
+      setError("");
     } catch (err) {
-      setError(getAxiosErrorMessage(err, "Failed to resend code"));
+      setError(
+        getAxiosErrorMessage(err, "Failed to resend verification code")
+      );
     } finally {
       setResendLoading(false);
     }
@@ -115,13 +115,11 @@ export default function EmailVerificationPage() {
           Verify your Email
         </h1>
 
-        <p className="text-[#D1D1D1] text-[15px]">A Token has been sent to your Email</p>
-        
-        {/* Email */}
-        
+        <p className="text-[#D1D1D1] text-[15px]">
+          A token has been sent to your email
+        </p>
 
-
-
+        {/* CODE INPUT */}
         <div className="flex justify-center items-center w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] gap-[10px]">
           {code.map((digit, index) => (
             <input
@@ -138,10 +136,13 @@ export default function EmailVerificationPage() {
 
         {error && <p className="text-[#FF4D4D] text-[13px]">{error}</p>}
 
+        {/* RESEND */}
         <div className="text-[#D1D1D1] text-[14px] mt-2">
           Didn’t get the code?
           {timer > 0 ? (
-            <span className="ml-1 text-[#888]">Resend in {timer}s</span>
+            <span className="ml-1 text-[#888]">
+              Resend in {timer}s
+            </span>
           ) : (
             <button
               onClick={handleResend}
@@ -153,6 +154,7 @@ export default function EmailVerificationPage() {
           )}
         </div>
 
+        {/* VERIFY BUTTON */}
         <div className="w-full max-w-[306px] h-[40px] mt-[20px] mb-[20px]">
           <Button
             disabled={loading}

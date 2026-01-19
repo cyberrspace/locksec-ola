@@ -8,11 +8,19 @@ const nextConfig: NextConfig = {
   },
 };
 
-const withPWANextConfig = withPWA({
-  dest: "public", 
+export default withPWA({
+  dest: "public",
   register: true,
   skipWaiting: true,
-  disable: false, 
+
+  // ✅ CRITICAL FIX
+  disable: process.env.NODE_ENV === "development",
 })(nextConfig);
 
-export default withPWANextConfig;
+
+// const withPWANextConfig = withPWA({
+//   dest: "public",
+//   register: true,
+//   skipWaiting: true,
+//   disable: process.env.NODE_ENV === "development",
+// })(nextConfig);

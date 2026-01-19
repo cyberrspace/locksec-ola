@@ -1,5 +1,21 @@
 // src/services/auth.ts
 
+/* ===================== COMMON ===================== */
+
+function getApiBase(): string {
+  const base = process.env.NEXT_PUBLIC_BASE_URL;
+
+  if (!base) {
+    throw new Error(
+      "NEXT_PUBLIC_BASE_URL is not defined. Check your .env.local file."
+    );
+  }
+
+  return base.replace(/\/+$/, "");
+}
+
+/* ===================== REGISTER ===================== */
+
 export interface RegisterPayload {
   firstName: string;
   lastName: string;
@@ -11,6 +27,7 @@ export interface RegisterPayload {
   moveInDate: string;
   businessName?: string;
   industryType?: string;
+  estateId: string;
 }
 
 export interface RegisterResponse {
@@ -18,19 +35,6 @@ export interface RegisterResponse {
   status: number;
   message: string;
   data: unknown;
-}
-
-function getApiBase(): string {
-  const base = process.env.NEXT_PUBLIC_BASE_URL;
-
-  if (!base) {
-    throw new Error(
-      "NEXT_PUBLIC_BASE_URL is not defined. Check your .env.local file."
-    );
-  }
-
-  // remove trailing slash if any
-  return base.replace(/\/+$/, "");
 }
 
 export async function registerUser(
@@ -41,39 +45,30 @@ export async function registerUser(
 
   const res = await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
   const contentType = res.headers.get("content-type") || "";
 
-  
   if (!res.ok) {
     if (contentType.includes("application/json")) {
-      const errJson = await res.json();
-      throw new Error(errJson?.message || "Registration failed");
-    } else {
-      const text = await res.text();
-      throw new Error(
-        `Registration failed (status ${res.status}). Server returned HTML:\n${text}`
-      );
+      const err = await res.json();
+      throw new Error(err?.message || "Registration failed");
     }
+    const text = await res.text();
+    throw new Error(`Registration failed (${res.status}): ${text}`);
   }
 
-  // ✅ success but must be JSON
   if (!contentType.includes("application/json")) {
     const text = await res.text();
-    throw new Error(
-      `Expected JSON but backend returned non-JSON response:\n${text}`
-    );
+    throw new Error(`Expected JSON but got:\n${text}`);
   }
 
   return (await res.json()) as RegisterResponse;
 }
 
-// src/services/auth.ts
+/* ===================== LOGIN ===================== */
 
 export interface LoginPayload {
   email: string;
@@ -109,9 +104,7 @@ export async function loginUser(
 
   const res = await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
@@ -119,12 +112,11 @@ export async function loginUser(
 
   if (!res.ok) {
     if (contentType.includes("application/json")) {
-      const errJson = await res.json();
-      throw new Error(errJson?.message || "Login failed");
-    } else {
-      const text = await res.text();
-      throw new Error(`Login failed (${res.status}): ${text}`);
+      const err = await res.json();
+      throw new Error(err?.message || "Login failed");
     }
+    const text = await res.text();
+    throw new Error(`Login failed (${res.status}): ${text}`);
   }
 
   if (!contentType.includes("application/json")) {
@@ -135,15 +127,115 @@ export async function loginUser(
   return (await res.json()) as LoginResponse;
 }
 
-// src/services/auth.ts
+/* ===================== VERIFY EMAIL ===================== */
+/**
+ * POST /auth/verify-email
+ * Body: { verificationToken: string }
+ */
+
+export interface VerifyEmailResponse {
+  success: boolean;
+  status: number;
+  message: string;
+  data: {
+    _id: string;
+    email: string;
+    isVerified: boolean;
+    verificationToken: string;
+    verificationTokenExpiresAt: string;
+    role: string;
+    status: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+
+export async function verifyEmail(
+  verificationToken: string
+): Promise<VerifyEmailResponse> {
+  const API_BASE = getApiBase();
+  const url = `${API_BASE}/auth/verify-email`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ verificationToken }),
+  });
+
+  const contentType = res.headers.get("content-type") || "";
+
+  if (!res.ok) {
+    if (contentType.includes("application/json")) {
+      const err = await res.json();
+      throw new Error(err?.message || "Invalid or expired verification code");
+    }
+    const text = await res.text();
+    throw new Error(`Verification failed (${res.status}): ${text}`);
+  }
+
+  if (!contentType.includes("application/json")) {
+    const text = await res.text();
+    throw new Error(`Expected JSON but got:\n${text}`);
+  }
+
+  return (await res.json()) as VerifyEmailResponse;
+}
+
+/* ===================== RESEND VERIFICATION ===================== */
+/**
+ * POST /auth/resend-verification
+ * Body: { email: string }
+ */
+
+export interface ResendVerificationResponse {
+  success: boolean;
+  status: number;
+  message: string;
+  data: string; // verification code
+}
+
+export async function resendVerification(
+  email: string
+): Promise<ResendVerificationResponse> {
+  const API_BASE = getApiBase();
+  const url = `${API_BASE}/auth/resend-verification`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  const contentType = res.headers.get("content-type") || "";
+
+  if (!res.ok) {
+    if (contentType.includes("application/json")) {
+      const err = await res.json();
+      throw new Error(err?.message || "Failed to resend verification code");
+    }
+    const text = await res.text();
+    throw new Error(`Resend failed (${res.status}): ${text}`);
+  }
+
+  if (!contentType.includes("application/json")) {
+    const text = await res.text();
+    throw new Error(`Expected JSON but got:\n${text}`);
+  }
+
+  return (await res.json()) as ResendVerificationResponse;
+}
+
+/* ===================== FORGOT PASSWORD ===================== */
 
 export interface ForgotPasswordResponse {
   success: boolean;
   status: number;
   message: string;
-  data: string; // reset code
+  data: string;
 }
-
 
 export async function forgotPassword(
   email: string
@@ -153,9 +245,7 @@ export async function forgotPassword(
 
   const res = await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
   });
 
@@ -163,12 +253,11 @@ export async function forgotPassword(
 
   if (!res.ok) {
     if (contentType.includes("application/json")) {
-      const errJson = await res.json();
-      throw new Error(errJson?.message || "Failed to send reset code");
-    } else {
-      const text = await res.text();
-      throw new Error(`Failed (${res.status}): ${text}`);
+      const err = await res.json();
+      throw new Error(err?.message || "Failed to send reset code");
     }
+    const text = await res.text();
+    throw new Error(`Failed (${res.status}): ${text}`);
   }
 
   if (!contentType.includes("application/json")) {
@@ -179,49 +268,7 @@ export async function forgotPassword(
   return (await res.json()) as ForgotPasswordResponse;
 }
 
-// src/services/auth.ts
-
-export interface RequestCodeResponse {
-  success: boolean;
-  status: number;
-  message: string;
-  data: {
-    _id: string;
-    email: string;
-    resetToken: string;
-    resetTokenExpiresAt: string;
-  };
-}
-
-export async function requestResetCode(
-  resetToken: string
-): Promise<RequestCodeResponse> {
-  const API_BASE = getApiBase();
-  const url = `${API_BASE}/auth/request-code`;
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ resetToken }),
-  });
-
-  const contentType = res.headers.get("content-type") || "";
-
-  if (!res.ok) {
-    if (contentType.includes("application/json")) {
-      const err = await res.json();
-      throw new Error(err?.message || "Invalid or expired code");
-    }
-    throw new Error("Invalid or expired code");
-  }
-
-  return (await res.json()) as RequestCodeResponse;
-}
-
-
-// src/services/auth.ts
+/* ===================== RESET PASSWORD ===================== */
 
 export interface ResetPasswordResponse {
   success: boolean;
@@ -239,9 +286,7 @@ export async function resetPassword(
 
   const res = await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ newPassword }),
   });
 
