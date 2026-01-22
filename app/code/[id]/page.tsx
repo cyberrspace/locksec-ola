@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import ContentWrapper from "@/components/common/ContentWrapper";
 import CodeHero from "@/components/GeneratedPage/CodeHero";
 import CodeDetails from "@/components/GeneratedPage/CodeDetails";
-import { getAccessCodeById } from "@/services/accessCodes";
+import { getAccessCodeById } from "@/services/AccessCodes";
 import { AccessCode } from "@/types/accessCode";
 
 export default function CodeByIdPage() {
