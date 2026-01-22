@@ -5,7 +5,8 @@ import { useParams } from "next/navigation";
 import ContentWrapper from "@/components/common/ContentWrapper";
 import CodeHero from "@/components/GeneratedPage/CodeHero";
 import CodeDetails from "@/components/GeneratedPage/CodeDetails";
-import { getAccessCodeById, AccessCode } from "@/services/accessCodes";
+import { getAccessCodeById } from "@/services/accessCodes";
+import { AccessCode } from "@/types/accessCode";
 
 export default function CodeByIdPage() {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,8 @@ export default function CodeByIdPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!id) return;
+
     const fetchCode = async () => {
       try {
         let codeData: AccessCode | null = null;
@@ -20,16 +23,15 @@ export default function CodeByIdPage() {
         // ✅ Try sessionStorage first
         const stored = sessionStorage.getItem("generatedAccessCode");
         if (stored) {
-          const parsed = JSON.parse(stored);
+          const parsed: AccessCode = JSON.parse(stored);
           if (parsed._id === id) {
             codeData = parsed;
           }
         }
 
         // ✅ Otherwise fetch from backend
-        if (!codeData && id) {
-          const res = await getAccessCodeById(id);
-          codeData = res.data.data;
+        if (!codeData) {
+          codeData = await getAccessCodeById(id);
         }
 
         setData(codeData);

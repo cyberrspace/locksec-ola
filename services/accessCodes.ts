@@ -1,5 +1,7 @@
 // services/accessCodes.ts
+
 import axiosInstance from "@/lib/axios";
+import { AccessCode } from "@/types/accessCode";
 
 /* ================= TYPES ================= */
 
@@ -11,22 +13,6 @@ export interface CreateAccessCodePayload {
   numOfPeople: number;
   withVehicle: boolean;
   plateNum?: string;
-}
-
-export interface AccessCode {
-  _id: string;
-  userId: string;
-  code: string;
-  victorType: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  numOfPeople: number;
-  withVehicle: boolean;
-  plateNum?: string;
-  status: "active" | "inactive";
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface ApiResponse<T> {
@@ -44,9 +30,7 @@ export async function createAccessCode(
   const res = await axiosInstance.post<ApiResponse<AccessCode>>(
     "/access-codes",
     payload,
-    {
-      withCredentials: true, // ✅ REQUIRED for auth cookies
-    }
+    { withCredentials: true }
   );
 
   return res.data;
@@ -54,13 +38,12 @@ export async function createAccessCode(
 
 export async function getAccessCodeById(
   id: string
-): Promise<ApiResponse<AccessCode>> {
+): Promise<AccessCode> {
   const res = await axiosInstance.get<ApiResponse<AccessCode>>(
     `/access-codes/${id}`,
-    {
-      withCredentials: true,
-    }
+    { withCredentials: true }
   );
 
-  return res.data;
+  // ✅ RETURN ONLY THE ACCESS CODE
+  return res.data.data;
 }
