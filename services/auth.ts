@@ -56,13 +56,7 @@ export async function registerUser(
       const err = await res.json();
       throw new Error(err?.message || "Registration failed");
     }
-    const text = await res.text();
-    throw new Error(`Registration failed (${res.status}): ${text}`);
-  }
-
-  if (!contentType.includes("application/json")) {
-    const text = await res.text();
-    throw new Error(`Expected JSON but got:\n${text}`);
+    throw new Error(`Registration failed (${res.status})`);
   }
 
   return (await res.json()) as RegisterResponse;
@@ -115,47 +109,15 @@ export async function loginUser(
       const err = await res.json();
       throw new Error(err?.message || "Login failed");
     }
-    const text = await res.text();
-    throw new Error(`Login failed (${res.status}): ${text}`);
-  }
-
-  if (!contentType.includes("application/json")) {
-    const text = await res.text();
-    throw new Error(`Expected JSON but got:\n${text}`);
+    throw new Error(`Login failed (${res.status})`);
   }
 
   return (await res.json()) as LoginResponse;
 }
 
 /* ===================== VERIFY EMAIL ===================== */
-/**
- * POST /auth/verify-email
- * Body: { verificationToken: string }
- */
 
-export interface VerifyEmailResponse {
-  success: boolean;
-  status: number;
-  message: string;
-  data: {
-    _id: string;
-    email: string;
-    isVerified: boolean;
-    verificationToken: string;
-    verificationTokenExpiresAt: string;
-    role: string;
-    status: string;
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
-    createdAt: string;
-    updatedAt: string;
-  };
-}
-
-export async function verifyEmail(
-  verificationToken: string
-): Promise<VerifyEmailResponse> {
+export async function verifyEmail(verificationToken: string) {
   const API_BASE = getApiBase();
   const url = `${API_BASE}/auth/verify-email`;
 
@@ -165,41 +127,16 @@ export async function verifyEmail(
     body: JSON.stringify({ verificationToken }),
   });
 
-  const contentType = res.headers.get("content-type") || "";
-
   if (!res.ok) {
-    if (contentType.includes("application/json")) {
-      const err = await res.json();
-      throw new Error(err?.message || "Invalid or expired verification code");
-    }
-    const text = await res.text();
-    throw new Error(`Verification failed (${res.status}): ${text}`);
+    throw new Error("Invalid or expired verification code");
   }
 
-  if (!contentType.includes("application/json")) {
-    const text = await res.text();
-    throw new Error(`Expected JSON but got:\n${text}`);
-  }
-
-  return (await res.json()) as VerifyEmailResponse;
+  return res.json();
 }
 
 /* ===================== RESEND VERIFICATION ===================== */
-/**
- * POST /auth/resend-verification
- * Body: { email: string }
- */
 
-export interface ResendVerificationResponse {
-  success: boolean;
-  status: number;
-  message: string;
-  data: string; // verification code
-}
-
-export async function resendVerification(
-  email: string
-): Promise<ResendVerificationResponse> {
+export async function resendVerification(email: string) {
   const API_BASE = getApiBase();
   const url = `${API_BASE}/auth/resend-verification`;
 
@@ -209,23 +146,11 @@ export async function resendVerification(
     body: JSON.stringify({ email }),
   });
 
-  const contentType = res.headers.get("content-type") || "";
-
   if (!res.ok) {
-    if (contentType.includes("application/json")) {
-      const err = await res.json();
-      throw new Error(err?.message || "Failed to resend verification code");
-    }
-    const text = await res.text();
-    throw new Error(`Resend failed (${res.status}): ${text}`);
+    throw new Error("Failed to resend verification code");
   }
 
-  if (!contentType.includes("application/json")) {
-    const text = await res.text();
-    throw new Error(`Expected JSON but got:\n${text}`);
-  }
-
-  return (await res.json()) as ResendVerificationResponse;
+  return res.json();
 }
 
 /* ===================== FORGOT PASSWORD ===================== */
@@ -234,7 +159,10 @@ export interface ForgotPasswordResponse {
   success: boolean;
   status: number;
   message: string;
-  data: string;
+ 
+  data: {
+    resetToken: string;
+  };
 }
 
 export async function forgotPassword(
@@ -249,20 +177,8 @@ export async function forgotPassword(
     body: JSON.stringify({ email }),
   });
 
-  const contentType = res.headers.get("content-type") || "";
-
   if (!res.ok) {
-    if (contentType.includes("application/json")) {
-      const err = await res.json();
-      throw new Error(err?.message || "Failed to send reset code");
-    }
-    const text = await res.text();
-    throw new Error(`Failed (${res.status}): ${text}`);
-  }
-
-  if (!contentType.includes("application/json")) {
-    const text = await res.text();
-    throw new Error(`Expected JSON but got:\n${text}`);
+    throw new Error("Failed to send reset code");
   }
 
   return (await res.json()) as ForgotPasswordResponse;
@@ -270,17 +186,10 @@ export async function forgotPassword(
 
 /* ===================== RESET PASSWORD ===================== */
 
-export interface ResetPasswordResponse {
-  success: boolean;
-  status: number;
-  message: string;
-  data: object;
-}
-
 export async function resetPassword(
   userId: string,
   newPassword: string
-): Promise<ResetPasswordResponse> {
+) {
   const API_BASE = getApiBase();
   const url = `${API_BASE}/auth/reset-password/${userId}`;
 
@@ -290,15 +199,17 @@ export async function resetPassword(
     body: JSON.stringify({ newPassword }),
   });
 
-  const contentType = res.headers.get("content-type") || "";
-
   if (!res.ok) {
-    if (contentType.includes("application/json")) {
-      const err = await res.json();
-      throw new Error(err?.message || "Password reset failed");
-    }
     throw new Error("Password reset failed");
   }
 
-  return (await res.json()) as ResetPasswordResponse;
+  return res.json();
 }
+
+/* ============================================================
+   ✅ FIX #1 (IMPORTANT)
+   We export an ALIAS so existing UI code can use requestResetCode
+   without changing backend logic.
+   ============================================================ */
+
+export const requestResetCode = forgotPassword;
