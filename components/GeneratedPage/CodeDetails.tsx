@@ -4,7 +4,7 @@ import { Copy } from "lucide-react";
 import VisitorCodeCard from "@/components/VisitorCodePage/VisitorCodeCard";
 import WhatsAppButton from "@/components/WhatsAppCode/WhatsAppButton";
 import { useRef, useState } from "react";
-import { AccessCode } from "@/types/accessCode";
+import { AccessCode } from "@/types/AccessCode";
 
 interface CodeDetailsProps {
   data: AccessCode;

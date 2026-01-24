@@ -1,6 +1,6 @@
 // lib/getAccessCodeById.ts
 
-import { AccessCode } from "@/types/accessCode";
+import { AccessCode } from "@/types/AccessCode";
 
 export async function getAccessCodeById(id: string): Promise<AccessCode> {
   const res = await fetch(`/api/access/${id}`, {

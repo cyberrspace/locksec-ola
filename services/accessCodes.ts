@@ -1,7 +1,7 @@
 // services/accessCodes.ts
 
 import axiosInstance from "@/lib/axios";
-import { AccessCode } from "@/types/accessCode";
+import { AccessCode } from "@/types/AccessCode";
 
 
 /* ================= TYPES ================= */

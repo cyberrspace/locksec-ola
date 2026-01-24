@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import AccessButton from "./AccessButton";
 import AccessCard from "./AccessCard";
 import { ChevronDown } from "lucide-react";
-import { createAccessCode } from "@/services/accessCodes";
+
+import { createAccessCode } from "@/services/AccessCodes";
+
 import axios from "axios";
 
 export default function AccessForm() {

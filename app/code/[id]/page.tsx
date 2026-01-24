@@ -6,7 +6,7 @@ import ContentWrapper from "@/components/common/ContentWrapper";
 import CodeHero from "@/components/GeneratedPage/CodeHero";
 import CodeDetails from "@/components/GeneratedPage/CodeDetails";
 import { getAccessCodeById } from "@/services/AccessCodes";
-import { AccessCode } from "@/types/accessCode";
+import { AccessCode } from "@/types/AccessCode";
 
 export default function CodeByIdPage() {
   const { id } = useParams<{ id: string }>();

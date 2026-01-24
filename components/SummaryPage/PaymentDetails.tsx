@@ -4,6 +4,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import PayLine from "./PayLine";
 
+
+
 export default function PaymentDetails() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -28,7 +30,6 @@ export default function PaymentDetails() {
     }
   }, []);
 
-  // Payment Handler
   const handlePayment = () => {
     if (!bills || !apartment || months <= 0) {
       setError("Please fill all payment details correctly before proceeding.");
@@ -41,7 +42,6 @@ export default function PaymentDetails() {
       return;
     }
 
-    // Ensure Paystack script has loaded
     if (!window.PaystackPop || !window.PaystackPop.setup) {
       alert("Payment system not ready. Please reload the page.");
       return;
@@ -49,14 +49,14 @@ export default function PaymentDetails() {
 
     const handler = window.PaystackPop.setup({
       key,
-      email: "user@example.com", // ideally replace with actual user email
-      amount: totalAmt * 100, // amount in kobo
+      email: "user@example.com",
+      amount: totalAmt * 100,
       currency: "NGN",
       ref: "REF_" + Date.now(),
-      onClose: function () {
+      onClose: () => {
         alert("Transaction was cancelled.");
       },
-      callback: function (response: { status: string; reference?: string }) {
+      callback: (response) => {
         console.log("Payment successful:", response);
         router.push(
           `/success?bills=${bills}&apartment=${apartment}&months=${months}`
@@ -113,7 +113,6 @@ export default function PaymentDetails() {
         )}
       </div>
 
-      {/* ✅ Payment Button */}
       <div className="mt-10 flex flex-col items-center w-full max-w-md mx-auto">
         <button
           onClick={handlePayment}
