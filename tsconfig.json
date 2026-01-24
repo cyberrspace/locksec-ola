@@ -11,17 +11,17 @@
     "strict": true,
     "noEmit": true,
     "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "Node", // ✅ capital N works better for Next.js
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
       ]
     },
-    "ignoreDeprecations": "5.0",
     "esModuleInterop": true,
     "plugins": [
       {
