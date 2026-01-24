@@ -11,7 +11,7 @@
     "strict": true,
     "noEmit": true,
     "module": "ESNext",
-    "moduleResolution": "node", // ✅ Fix here
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -21,8 +21,8 @@
         "./*"
       ]
     },
-    "ignoreDeprecations": "6.0",
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "plugins": [
       {
         "name": "next"
