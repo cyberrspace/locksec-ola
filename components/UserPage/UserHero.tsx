@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { MapPin, Download } from "lucide-react";
-import { getUserProfile } from "@/services/user";
+import { getUserProfile } from "@/src/services/user";
 
 
 // Define the BeforeInstallPromptEvent type

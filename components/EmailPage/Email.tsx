@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import {
   verifyEmail,
   resendVerification,
-} from "@/services/auth";
+} from "@/src/services/auth";
 
 import { getAxiosErrorMessage } from "@/lib/getAxiosError";
 

@@ -4,9 +4,9 @@ import BackButton from "../common/BackButton";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { requestResetCode } from "@/services/auth";
+import { requestResetCode } from "@/src/services/auth";
 import { getAxiosErrorMessage } from "@/lib/getAxiosError";
-import { forgotPassword } from "@/services/auth";
+import { forgotPassword } from "@/src/services/auth";
 
 
 

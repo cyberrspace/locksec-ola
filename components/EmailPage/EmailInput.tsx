@@ -4,7 +4,7 @@ import BackButton from "../common/BackButton";
 import { Mail } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState } from "react";
-import { forgotPassword } from "@/services/auth";
+import { forgotPassword } from "@/src/services/auth";
 
 
 import { getAxiosErrorMessage } from "@/lib/getAxiosError"; // ensure this exists

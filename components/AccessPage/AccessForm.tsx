@@ -6,7 +6,7 @@ import AccessButton from "./AccessButton";
 import AccessCard from "./AccessCard";
 import { ChevronDown } from "lucide-react";
 
-import { createAccessCode } from "@/services/AccessCodes";
+import { createAccessCode } from "@/src/services/AccessCodes";
 
 import axios from "axios";
 
