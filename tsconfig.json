@@ -18,7 +18,10 @@
     "incremental": true,
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
+      ],
+      "@lib/*": [
+        "./src/lib/*"
       ]
     },
     "esModuleInterop": true,

@@ -1,4 +1,4 @@
-import axiosInstance from "@/lib/axios";
+import axiosInstance from "../lib/axios";
 
 export async function getAllUsers() {
   const token = localStorage.getItem("authToken");

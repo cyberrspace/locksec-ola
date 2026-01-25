@@ -4,15 +4,18 @@ import BackButton from "../common/BackButton";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-
-import {
-  verifyEmail,
-  resendVerification,
-} from "@/src/services/auth";
-
+import { requestResetCode } from "@/services/auth";
 import { getAxiosErrorMessage } from "@/lib/getAxiosError";
+import { forgotPassword } from "@/services/auth";
 
-export default function EmailVerificationPage() {
+
+
+// TEMP FIX: Remove broken imports and replace with safe local functions
+
+
+
+
+export default function ForgotPassEmail() {
   const router = useRouter();
 
   const [code, setCode] = useState(["", "", "", "", "", ""]);
@@ -23,43 +26,42 @@ export default function EmailVerificationPage() {
   const [timer, setTimer] = useState(30);
   const [email, setEmail] = useState<string>("");
 
-  /* ================= LOAD EMAIL ================= */
+  // Load email from localStorage
   useEffect(() => {
-    const savedEmail = localStorage.getItem("pendingEmail");
-    if (savedEmail) setEmail(savedEmail);
+    const saved = localStorage.getItem("resetEmail");
+    if (saved) setEmail(saved);
   }, []);
 
-  /* ================= COUNTDOWN ================= */
+
+  // Countdown timer
   useEffect(() => {
     if (timer > 0) {
-      const interval = setInterval(() => {
-        setTimer((t) => t - 1);
-      }, 1000);
+      const interval = setInterval(() => setTimer((t) => t - 1), 1000);
       return () => clearInterval(interval);
     }
   }, [timer]);
 
-  /* ================= INPUT HANDLER ================= */
+  // Handle 6-digit code input
   const handleChange = (value: string, index: number) => {
-    if (!/^\d?$/.test(value)) return;
+    if (/^\d?$/.test(value)) {
+      const newCode = [...code];
+      newCode[index] = value;
+      setCode(newCode);
+      setError("");
 
-    const updated = [...code];
-    updated[index] = value;
-    setCode(updated);
-    setError("");
-
-    if (value && index < 5) {
-      document.getElementById(`code-${index + 1}`)?.focus();
-    } else if (!value && index > 0) {
-      document.getElementById(`code-${index - 1}`)?.focus();
+      if (value && index < 5) {
+        document.getElementById(`code-${index + 1}`)?.focus();
+      } else if (!value && index > 0) {
+        document.getElementById(`code-${index - 1}`)?.focus();
+      }
     }
   };
 
-  /* ================= VERIFY EMAIL ================= */
+  // Verify the code
   const handleVerify = async () => {
-    const verificationToken = code.join("");
+    const codeEntered = code.join("");
 
-    if (verificationToken.length !== 6) {
+    if (codeEntered.length !== 6) {
       setError("Enter the 6-digit code sent to your email");
       return;
     }
@@ -67,42 +69,38 @@ export default function EmailVerificationPage() {
     try {
       setLoading(true);
 
-      await verifyEmail(verificationToken);
+      const res = await requestResetCode(codeEntered);
 
-      // ✅ verification successful
-      localStorage.removeItem("pendingEmail");
-      router.push("/login");
-    } catch (err) {
-      setError(
-        getAxiosErrorMessage(err, "Invalid or expired verification code")
-      );
+      // Store verified reset token for next step
+      localStorage.setItem("verifiedResetToken", res.data.resetToken);
+
+      router.push("/reset-password");
+    } catch (err: unknown) {
+      setError(getAxiosErrorMessage(err, "Invalid or expired verification code"));
     } finally {
       setLoading(false);
     }
   };
 
-  /* ================= RESEND CODE ================= */
+
+  // Resend verification
   const handleResend = async () => {
     if (!email) {
-      setError("Email not found. Please register again.");
+      setError("Email not found. Please restart password recovery.");
       return;
     }
 
     try {
       setResendLoading(true);
-
-      await resendVerification(email);
-
+      await forgotPassword(email);
       setTimer(30);
-      setError("");
     } catch (err) {
-      setError(
-        getAxiosErrorMessage(err, "Failed to resend verification code")
-      );
+      setError(getAxiosErrorMessage(err, "Failed to resend code"));
     } finally {
       setResendLoading(false);
     }
   };
+
 
   return (
     <main className="w-full max-w-[512px] sm:min-h-[692px] min-h-screen flex flex-col justify-center items-center bg-black px-[16px] sm:px-[24px] md:px-[32px] lg:px-[40px] overflow-hidden">
@@ -115,11 +113,13 @@ export default function EmailVerificationPage() {
           Verify your Email
         </h1>
 
-        <p className="text-[#D1D1D1] text-[15px]">
-          A token has been sent to your email
-        </p>
+        <p className="text-[#D1D1D1] text-[15px]">A Token has been sent to your Email</p>
+        
+        {/* Email */}
+        
 
-        {/* CODE INPUT */}
+
+
         <div className="flex justify-center items-center w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] gap-[10px]">
           {code.map((digit, index) => (
             <input
@@ -136,13 +136,10 @@ export default function EmailVerificationPage() {
 
         {error && <p className="text-[#FF4D4D] text-[13px]">{error}</p>}
 
-        {/* RESEND */}
         <div className="text-[#D1D1D1] text-[14px] mt-2">
           Didn’t get the code?
           {timer > 0 ? (
-            <span className="ml-1 text-[#888]">
-              Resend in {timer}s
-            </span>
+            <span className="ml-1 text-[#888]">Resend in {timer}s</span>
           ) : (
             <button
               onClick={handleResend}
@@ -154,7 +151,6 @@ export default function EmailVerificationPage() {
           )}
         </div>
 
-        {/* VERIFY BUTTON */}
         <div className="w-full max-w-[306px] h-[40px] mt-[20px] mb-[20px]">
           <Button
             disabled={loading}

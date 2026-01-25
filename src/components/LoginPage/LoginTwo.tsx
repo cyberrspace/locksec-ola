@@ -5,7 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import ForgotPasswordLink from "./ForgotPass";
 import { useRouter } from "next/navigation";
 import LoginTerms from "./LoginTerms";
-import { loginUser } from "@/src/services/auth";
+import { loginUser } from "@/services/auth";
 
 
 export default function SignUpForm() {

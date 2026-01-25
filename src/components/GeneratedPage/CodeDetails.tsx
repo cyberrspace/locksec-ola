@@ -1,10 +1,12 @@
 "use client";
 
 import { Copy } from "lucide-react";
-import VisitorCodeCard from "@/components/VisitorCodePage/VisitorCodeCard";
-import WhatsAppButton from "@/components/WhatsAppCode/WhatsAppButton";
+
+
 import { useRef, useState } from "react";
 import { AccessCode } from "@/types/AccessCode";
+import WhatsAppButton from "../WhatsAppCode/WhatsAppButton";
+import VisitorCodeCard from "../VisitorCodePage/VisitorCodeCard";
 
 interface CodeDetailsProps {
   data: AccessCode;
@@ -54,11 +56,11 @@ Powered by https://locsec.africa`;
           validFrom={data.createdAt}
           validUntil={data.updatedAt}
         />
-      </div>
+         </div>
 
       <div className="mt-6" ref={cardRef}>
-        <VisitorCodeCard
-          code={data.code}
+     <VisitorCodeCard
+      code={data.code}
           validFrom={data.createdAt}
           validUntil={data.updatedAt}
           address="Estate Address"
@@ -66,7 +68,12 @@ Powered by https://locsec.africa`;
           visitorsCount={String(data.numOfPeople)}
           visitorName={`${data.firstName} ${data.lastName}`}
           plateNumber={data.plateNum ?? "N/A"}
-        />
+     
+     
+     />
+
+
+       
       </div>
 
       <textarea

@@ -7,7 +7,7 @@ import RadioButton from "./RadioButton";
 import IndustrySelect from "./IndusrtrySelect";
 
 // src/components/RegisterForm.tsx
-import { registerUser, RegisterPayload } from "@/src/services/auth";
+import { registerUser, RegisterPayload } from "@/services/auth";
 import { getAxiosErrorMessage } from "@/lib/getAxiosError";
 
 

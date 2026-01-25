@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import { getAxiosErrorMessage } from "@/lib/getAxiosError";
 import { useEffect } from "react";
-import { resetPassword } from "@/src/services/auth";
+import { resetPassword } from "@/services/auth";
 
 
 export default function ResetPassword() {

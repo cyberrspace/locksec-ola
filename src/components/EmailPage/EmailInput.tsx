@@ -4,10 +4,10 @@ import BackButton from "../common/BackButton";
 import { Mail } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState } from "react";
-import { forgotPassword } from "@/src/services/auth";
+import { forgotPassword } from "@/services/auth";
 
 
-import { getAxiosErrorMessage } from "@/lib/getAxiosError"; // ensure this exists
+import { getAxiosErrorMessage } from "@/lib/getAxiosError";
 
 export default function EmailInput() {
   const router = useRouter();
